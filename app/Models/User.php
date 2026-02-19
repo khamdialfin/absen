@@ -4,6 +4,7 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
@@ -21,6 +22,14 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'google_id',
+        'avatar',
+        'role',
+        'kelas',
+        'no_absen',
+        'gender',
+        'nis',
+        'profile_completed',
     ];
 
     /**
@@ -43,6 +52,55 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'profile_completed' => 'boolean',
         ];
+    }
+
+    // ─── Relationships ──────────────────────────────────────────
+
+    /**
+     * User memiliki banyak data attendance.
+     */
+    public function attendances(): HasMany
+    {
+        return $this->hasMany(Attendance::class);
+    }
+
+    // ─── Role Helpers ───────────────────────────────────────────
+
+    public function isWalikelas(): bool
+    {
+        return $this->role === 'walikelas';
+    }
+
+    public function isSekertaris(): bool
+    {
+        return $this->role === 'sekertaris';
+    }
+
+    public function isBendahara(): bool
+    {
+        return $this->role === 'bendahara';
+    }
+
+    public function isSiswa(): bool
+    {
+        return $this->role === 'siswa';
+    }
+
+    /**
+     * Cek apakah user sudah menetapkan password.
+     */
+    public function hasPassword(): bool
+    {
+        return !is_null($this->password);
+    }
+
+    /**
+     * Cek apakah profil sudah lengkap.
+     */
+    public function hasProfileCompleted(): bool
+    {
+        return $this->profile_completed;
     }
 }

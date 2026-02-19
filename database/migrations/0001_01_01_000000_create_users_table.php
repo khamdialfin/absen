@@ -15,8 +15,16 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('email')->unique();
+            $table->string('google_id')->nullable()->unique();
+            $table->string('avatar')->nullable();
+            $table->enum('role', ['walikelas', 'sekertaris', 'bendahara', 'siswa'])->default('siswa');
+            $table->string('kelas')->nullable();
+            $table->string('no_absen')->nullable();
+            $table->enum('gender', ['L', 'P'])->nullable();
+            $table->string('nis')->nullable()->unique();
             $table->timestamp('email_verified_at')->nullable();
-            $table->string('password');
+            $table->string('password')->nullable();
+            $table->boolean('profile_completed')->default(false);
             $table->rememberToken();
             $table->timestamps();
         });
