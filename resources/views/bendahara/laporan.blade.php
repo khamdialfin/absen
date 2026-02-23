@@ -11,14 +11,14 @@
             <form action="{{ route('bendahara.laporan') }}" method="GET" class="flex flex-col sm:flex-row gap-2">
                 <div>
                     <input type="date" name="start_date" value="{{ $startDate }}" 
-                           class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm">
+                           class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-base px-4 py-2">
                 </div>
                 <div class="flex items-center text-gray-400">-</div>
                 <div>
                     <input type="date" name="end_date" value="{{ $endDate }}" 
-                           class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm">
+                           class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-base px-4 py-2" >
                 </div>
-                <button type="submit" class="inline-flex justify-center items-center rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                <button type="submit" class="inline-flex justify-center items-center rounded-lg bg-indigo-600 px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
                     Start
                 </button>
             </form>

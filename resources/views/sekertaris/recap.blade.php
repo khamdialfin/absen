@@ -5,19 +5,22 @@
             <p class="text-sm text-gray-500 mt-1">Laporan kehadiran siswa per hari</p>
         </div>
 
-        <div class="flex items-center gap-3">
-            <a href="{{ route('sekertaris.scan') }}"
-               class="inline-flex items-center justify-center rounded-lg bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
-                📷 Scan QR
-            </a>
+        <div class="flex items-end gap-3">
+           <a href="{{ route('sekertaris.scan') }}"
+   class="h-10 inline-flex items-center justify-center whitespace-nowrap rounded-lg bg-white px-2 text-sm font-medium text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
+    📷 <span class="ml-2">Scan QR</span>
+</a>
+
             <a href="{{ route('sekertaris.recap.export', request()->all()) }}"
-               class="inline-flex items-center justify-center rounded-lg bg-green-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-green-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600">
-                📥 Export .CSV
-            </a>
-            <button onclick="window.print()"
-                    class="inline-flex items-center justify-center rounded-lg bg-gray-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-gray-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-600">
-                🖨️ Print
-            </button>
+   class="h-10 inline-flex items-center justify-center rounded-lg bg-green-600 px-2 text-sm font-medium text-white shadow-sm hover:bg-green-700">
+    📥 <span class="ml-2">Export.CSV</span>
+</a>
+
+           <button onclick="window.print()"
+        class="h-10 inline-flex items-center justify-center rounded-lg bg-gray-600 px-2 text-sm font-medium text-white shadow-sm hover:bg-gray-700">
+    🖨️ <span class="ml-2">Print</span>
+</button>
+
             {{-- Filter --}}
             <form action="{{ route('sekertaris.recap') }}" method="GET" class="flex items-center gap-2">
                 @include('sekertaris.partials.filter')
