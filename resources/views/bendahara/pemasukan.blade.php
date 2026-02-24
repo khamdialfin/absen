@@ -9,7 +9,7 @@
             </div>
             <button @click="modalOpen = true" 
                     class="inline-flex items-center justify-center rounded-xl bg-green-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2">
-                ➕ Catat Pemasukan
+                 Catat Pemasukan
             </button>
         </div>
 

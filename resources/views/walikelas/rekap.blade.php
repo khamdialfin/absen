@@ -13,7 +13,7 @@
             
             {{-- Export --}}
             <a href="{{ route('walikelas.rekap.export', request()->all()) }}"
-               class="inline-flex items-center justify-center rounded-lg bg-green-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 h-[38px] mt-auto">
+               class="h-10 inline-flex items-center justify-center rounded-lg bg-green-600 px-4  text-base  font-medium text-white shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 h-[38px] mt-auto">
                 📥 Export
             </a>
         </div>
@@ -21,7 +21,7 @@
 
     {{-- Info --}}
     <div class="mb-6 rounded-xl bg-primary-50 border border-primary-100 p-4">
-        <p class="text-sm text-primary-700">
+        <p class="text-base text-primary-700">
             Laporan: <strong>{{ $label }}</strong>
             @if(isset($workingDays) && $workingDays > 0)
              — Total hari kerja: <strong>{{ $workingDays }} hari</strong>
