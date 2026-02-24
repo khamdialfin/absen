@@ -2,43 +2,15 @@
 
 use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Auth\ParentController;
+use App\Http\Controllers\Auth\ProfileSetupController;
 use App\Http\Controllers\Auth\SetPasswordController;
 use App\Http\Controllers\Auth\SocialiteController;
+use App\Http\Controllers\BendaharaController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RekapController;
-use App\Http\Controllers\BendaharaController;
 use Illuminate\Support\Facades\Route;
-
-// ══════════════════════════════════════════════════════════════════
-// PUBLIC ROUTES
-// ══════════════════════════════════════════════════════════════════
-
-Route::get('/', fn() => redirect()->route('login'));
-
-Route::get('/login', [LoginController::class, 'showLogin'])
-    ->name('login')
-    ->middleware('guest');
-
-Route::post('/login', [LoginController::class, 'login'])
-    ->name('login.post')
-    ->middleware('guest');
-
-Route::get('/register', [LoginController::class, 'showRegister'])
-    ->name('register')
-    ->middleware('guest');
-
-// ══════════════════════════════════════════════════════════════════
-// GOOGLE OAUTH
-// ══════════════════════════════════════════════════════════════════
-
-Route::get('/auth/google', [SocialiteController::class, 'redirect'])
-    ->name('google.redirect');
-
-Route::get('/admin/auth/google/callback', [SocialiteController::class, 'callback'])
-    ->name('google.callback');
-
-use App\Http\Controllers\Auth\ProfileSetupController;
 
 // ══════════════════════════════════════════════════════════════════
 // AUTH ROUTES (sudah login, tapi mungkin belum lengkap)
@@ -57,6 +29,13 @@ Route::middleware('auth')->group(function () {
         ->name('profile.setup');
     Route::post('/profile/setup', [ProfileSetupController::class, 'store'])
         ->name('profile.store');
+
+    // Step 3: Setup Data Orang Tua (KHUSUS SISWA)
+    Route::get('/profile/orang-tua', [ParentController::class, 'show'])
+        ->name('profile.parent');
+
+    Route::post('/profile/orang-tua', [ParentController::class, 'store'])
+        ->name('profile.parent.store');    
 
     // Profile Management
     Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');

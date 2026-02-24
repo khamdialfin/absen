@@ -103,4 +103,9 @@ class User extends Authenticatable
     {
         return $this->profile_completed;
     }
+
+    public function orangTua()
+    {
+        return $this->hasOne(OrangTua::class, 'user_id');
+    }
 }

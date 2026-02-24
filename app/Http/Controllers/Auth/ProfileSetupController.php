@@ -50,7 +50,11 @@ class ProfileSetupController extends Controller
             'nis'               => $validated['nis'],
             'profile_completed' => true,
         ]);
+        if ($request->user()->role === 'siswa') {
+             return redirect()->route('profile.parent');
+        }
 
+        $request->user()->update(['profile_completed' => true]);
         return redirect()->route('dashboard')
             ->with('success', 'Profil berhasil disimpan! Selamat datang, ' . $user->name);
     }
