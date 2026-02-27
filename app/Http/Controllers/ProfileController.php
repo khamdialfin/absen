@@ -53,6 +53,26 @@ class ProfileController extends Controller
     }
 
     /**
+     * Delete the user's avatar.
+     */
+    public function deleteAvatar(Request $request)
+    {
+        $user = $request->user();
+
+        if ($user->avatar && !str_starts_with($user->avatar, 'http')) {
+            // avatar is stored as a URL like /storage/avatars/xxx.jpg, 
+            // extract the relative path for the public disk
+            $path = str_replace('/storage/', '', $user->avatar);
+            Storage::disk('public')->delete($path);
+        }
+
+        $user->avatar = null;
+        $user->save();
+
+        return back()->with('success', 'Foto profil berhasil dihapus.');
+    }
+
+    /**
      * Update the user's password.
      */
     public function updatePassword(Request $request)

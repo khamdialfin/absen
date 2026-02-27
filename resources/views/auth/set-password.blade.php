@@ -1,59 +1,49 @@
 <x-layouts.guest title="Set Password">
-    <div class="text-center mb-6">
-        <div class="mx-auto h-16 w-16 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center mb-4">
-            <svg class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" />
-            </svg>
+    <div class="text-center mb-4">
+        <div class="mx-auto d-flex align-items-center justify-content-center rounded-3 mb-3" style="width:64px;height:64px;background:rgba(255,255,255,0.2);backdrop-filter:blur(8px);">
+            <i class="bi bi-lock-fill text-white fs-3"></i>
         </div>
-        <h1 class="text-2xl font-bold text-white mb-1">Buat Password</h1>
-        <p class="text-primary-200 text-sm">Langkah 1 dari 2 — Buat password untuk keamanan akun Anda</p>
+        <h1 class="h4 fw-bold text-white mb-1">Buat Password</h1>
+        <p class="text-white-50 small">Langkah 1 dari 2 — Buat password untuk keamanan akun Anda</p>
     </div>
 
     {{-- Step Indicator --}}
-    <div class="flex items-center justify-center gap-2 mb-6">
-        <div class="flex items-center gap-1.5">
-            <div class="h-8 w-8 rounded-full bg-white text-primary-700 flex items-center justify-center text-sm font-bold">1</div>
-            <span class="text-white text-xs font-medium">Password</span>
+    <div class="d-flex align-items-center justify-content-center gap-2 mb-4">
+        <div class="d-flex align-items-center gap-1">
+            <div class="rounded-circle bg-white text-primary d-flex align-items-center justify-content-center fw-bold small" style="width:32px;height:32px;">1</div>
+            <span class="text-white small fw-medium">Password</span>
         </div>
-        <div class="w-8 h-0.5 bg-white/30"></div>
-        <div class="flex items-center gap-1.5">
-            <div class="h-8 w-8 rounded-full bg-white/20 text-white/60 flex items-center justify-center text-sm font-bold">2</div>
-            <span class="text-white/60 text-xs font-medium">Profil</span>
+        <div style="width:32px;height:2px;background:rgba(255,255,255,0.3);"></div>
+        <div class="d-flex align-items-center gap-1">
+            <div class="rounded-circle d-flex align-items-center justify-content-center fw-bold small" style="width:32px;height:32px;background:rgba(255,255,255,0.2);color:rgba(255,255,255,0.5);">2</div>
+            <span class="small" style="color:rgba(255,255,255,0.5);">Profil</span>
         </div>
     </div>
 
-    <div class="rounded-2xl bg-white/95 backdrop-blur-sm shadow-2xl p-6 sm:p-8">
-        @if($errors->any())
-            <div class="mb-5 rounded-lg bg-red-50 border border-red-200 p-3">
-                <ul class="text-xs text-red-700 space-y-1">
-                    @foreach ($errors->all() as $error)
-                        <li>• {{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
-        @endif
+    <div class="card border-0 shadow-lg" style="background:rgba(255,255,255,0.95);backdrop-filter:blur(8px);">
+        <div class="card-body p-4">
+            @if($errors->any())
+                <div class="alert alert-danger py-2 small">
+                    <ul class="mb-0 ps-3">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
 
-        <form method="POST" action="{{ route('password.store') }}" class="space-y-5">
-            @csrf
-
-            <div>
-                <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Password Baru</label>
-                <input type="password" name="password" id="password" required minlength="8"
-                       class="w-full rounded-xl border border-gray-300 px-4 py-3 text-sm shadow-sm focus:border-primary-500 focus:ring-2 focus:ring-primary-200 focus:outline-none"
-                       placeholder="Minimal 8 karakter">
-            </div>
-
-            <div>
-                <label for="password_confirmation" class="block text-sm font-medium text-gray-700 mb-1">Konfirmasi Password</label>
-                <input type="password" name="password_confirmation" id="password_confirmation" required
-                       class="w-full rounded-xl border border-gray-300 px-4 py-3 text-sm shadow-sm focus:border-primary-500 focus:ring-2 focus:ring-primary-200 focus:outline-none"
-                       placeholder="Ulangi password">
-            </div>
-
-            <button type="submit"
-                    class="w-full rounded-xl bg-primary-600 px-6 py-3 text-sm font-semibold text-white shadow-sm hover:bg-primary-700 transition-all hover:shadow-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2">
-                Lanjutkan ke Setup Profil →
-            </button>
-        </form>
+            <form method="POST" action="{{ route('password.store') }}">
+                @csrf
+                <div class="mb-3">
+                    <label for="password" class="form-label small fw-medium">Password Baru</label>
+                    <input type="password" name="password" id="password" required minlength="8" class="form-control" placeholder="Minimal 8 karakter">
+                </div>
+                <div class="mb-3">
+                    <label for="password_confirmation" class="form-label small fw-medium">Konfirmasi Password</label>
+                    <input type="password" name="password_confirmation" id="password_confirmation" required class="form-control" placeholder="Ulangi password">
+                </div>
+                <button type="submit" class="btn btn-primary w-100 fw-semibold">Lanjutkan ke Setup Profil →</button>
+            </form>
+        </div>
     </div>
 </x-layouts.guest>
