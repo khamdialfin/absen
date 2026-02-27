@@ -4,9 +4,9 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class OrangTua extends Model
+class ParentProfile extends Model
 {
-    protected $table = 'orang_tua';
+    protected $table = 'parent_profiles';
     
     protected $fillable = [
         'user_id',
@@ -17,6 +17,6 @@ class OrangTua extends Model
 
      public function siswa()
     {
-        return $this->belongsTo(User::class, 'user_id');
+        return $this->belongsTo(User::class);
     }
 }

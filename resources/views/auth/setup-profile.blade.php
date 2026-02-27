@@ -26,6 +26,11 @@
             <div class="h-8 w-8 rounded-full bg-white text-primary-700 flex items-center justify-center text-sm font-bold">2</div>
             <span class="text-white text-xs font-medium">Profil</span>
         </div>
+        <div class="w-8 h-0.5 bg-white/50"></div>
+         <div class="flex items-center gap-1.5">
+            <div class="h-8 w-8 rounded-full bg-white/30 text-white flex items-center justify-center text-sm font-bold">3</div>
+            <span class="text-white/80 text-xs font-medium">Profile Parent</span>
+        </div>
     </div>
 
     <div class="rounded-2xl bg-white/95 backdrop-blur-sm shadow-2xl p-6 sm:p-8">

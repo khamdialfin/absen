@@ -104,8 +104,10 @@ class User extends Authenticatable
         return $this->profile_completed;
     }
 
-    public function orangTua()
+    // Di app/Models/User.php, tambahkan relasi:
+
+    public function parentProfile()
     {
-        return $this->hasOne(OrangTua::class, 'user_id');
+        return $this->hasOne(ParentProfile::class);
     }
 }

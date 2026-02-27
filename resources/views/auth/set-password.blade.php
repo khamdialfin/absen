@@ -20,6 +20,11 @@
             <div class="h-8 w-8 rounded-full bg-white/20 text-white/60 flex items-center justify-center text-sm font-bold">2</div>
             <span class="text-white/60 text-xs font-medium">Profil</span>
         </div>
+        <div class="w-8 h-0.5 bg-white/30"></div>
+         <div class="flex items-center gap-1.5">
+            <div class="h-8 w-8 rounded-full bg-white/20 text-white/60 flex items-center justify-center text-sm font-bold">3</div>
+            <span class="text-white/60 text-xs font-medium">Profil parent</span>
+        </div>
     </div>
 
     <div class="rounded-2xl bg-white/95 backdrop-blur-sm shadow-2xl p-6 sm:p-8">
