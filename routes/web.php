@@ -39,6 +39,9 @@ Route::get('/admin/auth/google/callback', [SocialiteController::class, 'callback
     ->name('google.callback');
 
 use App\Http\Controllers\Auth\ProfileSetupController;
+use App\Http\Controllers\Auth\ParentController;
+
+
 
 // ══════════════════════════════════════════════════════════════════
 // AUTH ROUTES (sudah login, tapi mungkin belum lengkap)
@@ -58,11 +61,21 @@ Route::middleware('auth')->group(function () {
     Route::post('/profile/setup', [ProfileSetupController::class, 'store'])
         ->name('profile.store');
 
+    // Parent Data (Step 3)
+    Route::get('/profile/parent', [ParentController::class, 'show'])
+    ->name('profile.parent');
+    Route::post('/profile/parent/store', [ParentController::class, 'store'])
+    ->name('profile.parent.store');
+
     // Profile Management
     Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::put('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password');
     Route::delete('/profile/avatar', [ProfileController::class, 'deleteAvatar'])->name('profile.avatar.delete');
+
+    // Update data orang tua dari halaman profile
+   Route::put('/profile/parent/update', [ProfileController::class, 'updateParent'])
+   ->name('profile.parent.update');
 
     // Logout
     Route::post('/logout', [LoginController::class, 'logout'])

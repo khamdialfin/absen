@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ParentProfile;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
@@ -15,8 +16,17 @@ class ProfileController extends Controller
      */
     public function show(Request $request)
     {
+        $user = $request->user();
+        
+        // Ambil data orang tua jika user adalah siswa
+        $parentProfile = null;
+        if ($user->isSiswa()) {
+            $parentProfile = ParentProfile::where('user_id', $user->id)->first();
+        }
+        
         return view('profile.show', [
-            'user' => $request->user(),
+            'user' => $user,
+            'parentProfile' => $parentProfile, // Tambahkan ini!
         ]);
     }
 
@@ -87,5 +97,56 @@ class ProfileController extends Controller
         ]);
 
         return back()->with('success', 'Password berhasil diubah.');
+    }
+
+     /**
+     * Update data orang tua dari halaman profile.
+     */
+    public function updateParent(Request $request)
+    {
+        $user = auth()->user();
+        
+        if (!$user->isSiswa()) {
+            return redirect()->route('profile.show')
+                ->with('error', 'Anda tidak memiliki akses ke fitur ini.');
+        }
+
+        // Bersihkan nomor WA
+        $cleanPhone = $this->cleanPhoneNumber($request->parent_phone);
+
+        $validated = $request->validate([
+            'parent_name' => ['required', 'string', 'max:255'],
+            'parent_phone' => ['required', 'string', 'regex:/^62[0-9]{9,13}$/'],
+            'parent_address' => ['required', 'string', 'max:500'],
+        ]);
+
+        ParentProfile::updateOrCreate(
+            ['user_id' => $user->id],
+            [
+                'name' => $validated['parent_name'],
+                'phone' => $cleanPhone,
+                'address' => $validated['parent_address'],
+            ]
+        );
+
+        return redirect()->route('profile.show')
+            ->with('success', 'Data orang tua berhasil diperbarui!');
+    }
+
+    /**
+     * Helper untuk membersihkan nomor telepon.
+     */
+    private function cleanPhoneNumber($phone)
+    {
+        // Hapus semua karakter kecuali angka
+        $phone = preg_replace('/[^0-9]/', '', $phone);
+        
+        if (substr($phone, 0, 1) === '0') {
+            $phone = '62' . substr($phone, 1);
+        } elseif (substr($phone, 0, 1) === '8') {
+            $phone = '62' . $phone;
+        }
+        
+        return $phone;
     }
 }

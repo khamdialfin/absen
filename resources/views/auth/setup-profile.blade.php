@@ -24,6 +24,11 @@
             <div class="rounded-circle bg-white text-primary d-flex align-items-center justify-content-center fw-bold small" style="width:32px;height:32px;">2</div>
             <span class="text-white small fw-medium">Profil</span>
         </div>
+        <div class="w-8 h-0.5 bg-white/50"></div>
+         <div class="flex items-center gap-1.5">
+            <div class="h-8 w-8 rounded-full bg-white/30 text-white flex items-center justify-center text-sm font-bold">3</div>
+            <span class="text-white/80 text-xs font-medium">Profile Parent</span>
+        </div>
     </div>
 
     <div class="card border-0 shadow-lg" style="background:rgba(255,255,255,0.95);backdrop-filter:blur(8px);">

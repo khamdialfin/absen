@@ -18,7 +18,7 @@ class User extends Authenticatable
      *
      * @var list<string>
      */
-    protected $fillable = [
+    protected $fillable = [ 
         'name',
         'email',
         'password',
@@ -102,5 +102,12 @@ class User extends Authenticatable
     public function hasProfileCompleted(): bool
     {
         return $this->profile_completed;
+    }
+
+    // Di app/Models/User.php, tambahkan relasi:
+
+    public function parentProfile()
+    {
+        return $this->hasOne(ParentProfile::class);
     }
 }
