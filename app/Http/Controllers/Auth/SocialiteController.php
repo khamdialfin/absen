@@ -33,7 +33,7 @@ class SocialiteController extends Controller
         try {
             $googleUser = Socialite::driver('google')->user();
         } catch (\Exception $e) {
-            return redirect()->route('login')
+           return redirect()->route('login')
                 ->with('error', 'Gagal login dengan Google. Silakan coba lagi.');
         }
 

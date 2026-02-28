@@ -4,9 +4,14 @@
             <h1 class="h4 fw-bold">Rekap Absensi Masuk</h1>
             <p class="text-muted small">Laporan khusus jam masuk siswa</p>
         </div>
-        <div class="d-flex flex-wrap align-items-end gap-2">
-            <button onclick="window.print()" class="btn btn-secondary btn-sm"><i class="bi bi-printer"></i> Print</button>
-            <form action="{{ route('sekertaris.recap.masuk') }}" method="GET" class="d-flex align-items-center gap-2">
+
+        <div class="flex items-end gap-3">
+            <button onclick="window.print()"
+                    class="h-10 inline-flex items-center justify-center rounded-lg bg-gray-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-gray-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-600">
+                🖨️ Print
+            </button>
+            {{-- Filter --}}
+            <form action="{{ route('sekertaris.recap.masuk') }}" method="GET" class="flex items-center gap-2">
                 @include('sekertaris.partials.filter')
             </form>
         </div>
