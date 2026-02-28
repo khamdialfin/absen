@@ -122,10 +122,16 @@
         </div>
 
         {{-- Navigation --}}
-        <nav class="flex-grow-1 overflow-auto p-3" style="scrollbar-width:thin;">
-            <a href="{{ route('dashboard') }}" class="nav-link-sidebar {{ request()->routeIs('dashboard') ? 'active' : '' }}">
-                <i class="bi bi-grid-1x2 fs-6"></i> Dashboard
-            </a>
+        <nav class="flex-1 overflow-y-auto px-4 py-4 space-y-1">
+            @if(!auth()->user()->isBendahara())
+    <a href="{{ route('dashboard') }}"
+       class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium {{ request()->routeIs('dashboard') ? 'bg-primary-50 text-primary-700' : 'text-gray-700 hover:bg-gray-100' }}">
+        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z" />
+        </svg>
+        Dashboard
+    </a>
+@endif
 
             @if(auth()->user()->isWalikelas())
                 <div class="mt-3 mb-2"><p class="nav-section-label mb-0">Wali Kelas</p></div>
@@ -160,9 +166,22 @@
             @endif
 
             @if(auth()->user()->isBendahara())
-                <div class="mt-3 mb-2"><p class="nav-section-label mb-0">Bendahara</p></div>
-                <a href="{{ route('bendahara.pemasukan') }}" class="nav-link-sidebar {{ request()->routeIs('bendahara.pemasukan') ? 'active' : '' }}" style="{{ request()->routeIs('bendahara.pemasukan') ? 'background:#f0fdf4;color:#15803d;' : '' }}">
-                    <i class="bi bi-plus-circle fs-6"></i> Pemasukan
+                <div class="pt-4 pb-2">
+                    <p class="px-3 text-xs font-semibold text-gray-400 uppercase tracking-wider">Bendahara</p>
+                </div>
+                <a href="{{ route('bendahara.dashboard') }}"
+                   class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium {{ request()->routeIs('bendahara.dashboard') ? 'bg-primary-50 text-primary-700' : 'text-gray-700 hover:bg-gray-100' }}">
+                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z" />
+    </svg>
+                    Dashboard
+                </a>
+                <a href="{{ route('bendahara.pemasukan') }}"
+                   class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium {{ request()->routeIs('bendahara.pemasukan') ? 'bg-green-50 text-green-700' : 'text-gray-700 hover:bg-gray-100' }}">
+                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                    </svg>
+                    Pemasukan
                 </a>
                 <a href="{{ route('bendahara.pengeluaran') }}" class="nav-link-sidebar {{ request()->routeIs('bendahara.pengeluaran') ? 'active' : '' }}" style="{{ request()->routeIs('bendahara.pengeluaran') ? 'background:#fef2f2;color:#b91c1c;' : '' }}">
                     <i class="bi bi-dash-circle fs-6"></i> Pengeluaran

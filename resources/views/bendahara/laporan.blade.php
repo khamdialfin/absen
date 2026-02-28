@@ -1,18 +1,28 @@
 <x-layouts.app title="Laporan Kas">
-    <style>
-        @media print {
-            .sidebar, .sidebar-backdrop, .mobile-header, .d-print-none, .top-navbar { display: none !important; }
-            .main-content { margin-left: 0 !important; padding: 0 !important; }
-            body { background: white !important; }
-            .shadow-sm { box-shadow: none !important; }
-        }
-    </style>
-
-    {{-- Print Header (only visible when printing) --}}
-    <div class="d-none d-print-block mb-3">
-        <h1 class="h4 fw-bold">Laporan Kas</h1>
-        <p class="text-muted small">Periode: {{ \Carbon\Carbon::parse($startDate)->format('d M Y') }} - {{ \Carbon\Carbon::parse($endDate)->format('d M Y') }}</p>
-    </div>
+    <div class="space-y-6">
+        
+        {{-- Header & Filter --}}
+        <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+            <div>
+                <h1 class="text-2xl font-bold text-gray-900">Laporan Kas Kelas</h1>
+                <p class="text-sm text-gray-500 mt-1">Periode: {{ \Carbon\Carbon::parse($startDate)->format('d M Y') }} - {{ \Carbon\Carbon::parse($endDate)->format('d M Y') }}</p>
+            </div>
+            
+            <form action="{{ route('bendahara.laporan') }}" method="GET" class="flex flex-col sm:flex-row gap-2">
+                <div>
+                    <input type="date" name="start_date" value="{{ $startDate }}" 
+                           class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-base px-4 py-2">
+                </div>
+                <div class="flex items-center text-gray-400">-</div>
+                <div>
+                    <input type="date" name="end_date" value="{{ $endDate }}" 
+                           class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-base px-4 py-2" >
+                </div>
+                <button type="submit" class="inline-flex justify-center items-center rounded-lg bg-indigo-600 px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                    Start
+                </button>
+            </form>
+        </div>
 
     <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-end gap-3 mb-4 d-print-none">
         <div>

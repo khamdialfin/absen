@@ -4,10 +4,25 @@
             <h1 class="h4 fw-bold">Rekapan Absensi</h1>
             <p class="text-muted small">Laporan kehadiran siswa per hari</p>
         </div>
-        <div class="d-flex flex-wrap align-items-end gap-2 mt-2">
-            <a href="{{ route('sekertaris.recap.export', request()->all()) }}" class="btn btn-success btn-sm"><i class="bi bi-file-earmark-spreadsheet"></i> Export .CSV</a>
-            <button onclick="window.print()" class="btn btn-secondary btn-sm"><i class="bi bi-printer"></i> Print</button>
-            <form action="{{ route('sekertaris.recap') }}" method="GET" class="d-flex align-items-center gap-2">
+
+        <div class="flex items-end gap-3">
+           <a href="{{ route('sekertaris.scan') }}"
+   class="h-10 inline-flex items-center justify-center whitespace-nowrap rounded-lg bg-white px-2 text-sm font-medium text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
+    📷 <span class="ml-2">Scan QR</span>
+</a>
+
+            <a href="{{ route('sekertaris.recap.export', request()->all()) }}"
+   class="h-10 inline-flex items-center justify-center rounded-lg bg-green-600 px-2 text-sm font-medium text-white shadow-sm hover:bg-green-700">
+    📥 <span class="ml-2">Export.CSV</span>
+</a>
+
+           <button onclick="window.print()"
+        class="h-10 inline-flex items-center justify-center rounded-lg bg-gray-600 px-2 text-sm font-medium text-white shadow-sm hover:bg-gray-700">
+    🖨️ <span class="ml-2">Print</span>
+</button>
+
+            {{-- Filter --}}
+            <form action="{{ route('sekertaris.recap') }}" method="GET" class="flex items-center gap-2">
                 @include('sekertaris.partials.filter')
             </form>
         </div>
