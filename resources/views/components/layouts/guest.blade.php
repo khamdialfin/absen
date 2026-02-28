@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="id" class="h-full">
+<html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,13 +7,16 @@
     <title>{{ $title ?? 'Login' }} - Absensi Sekolah</title>
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=inter:400,500,600,700" rel="stylesheet" />
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background: #1e293b; min-height: 100vh; }
+    </style>
 </head>
-<body class="h-full bg-gradient-to-br from-primary-900 via-primary-800 to-primary-600 antialiased">
-    <div class="flex min-h-full items-center justify-center px-4 py-12 sm:px-6 lg:px-8">
-        <div class="w-full max-w-md">
-            {{ $slot }}
-        </div>
+<body class="d-flex align-items-center justify-content-center" style="min-height:100vh;">
+    <div class="w-100 px-3 py-4" style="max-width:448px;">
+        {{ $slot }}
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

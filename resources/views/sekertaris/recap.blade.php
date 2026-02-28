@@ -1,8 +1,8 @@
 <x-layouts.app title="Rekapan Absensi">
-    <div class="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 print:hidden">
+    <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start gap-3 mb-4 d-print-none">
         <div>
-            <h1 class="text-2xl font-bold text-gray-900">Rekapan Absensi</h1>
-            <p class="text-sm text-gray-500 mt-1">Laporan kehadiran siswa per hari</p>
+            <h1 class="h4 fw-bold">Rekapan Absensi</h1>
+            <p class="text-muted small">Laporan kehadiran siswa per hari</p>
         </div>
 
         <div class="flex items-end gap-3">
@@ -29,149 +29,81 @@
     </div>
 
     {{-- Print Header --}}
-    <div class="hidden print:block mb-6">
-        <h1 class="text-xl font-bold text-gray-900">Rekap Absensi Harian</h1>
-        <p class="text-sm text-gray-600">Periode: {{ $label }}</p>
+    <div class="d-none d-print-block mb-3">
+        <h1 class="h5 fw-bold">Rekap Absensi Harian</h1>
+        <p class="text-muted small">Periode: {{ $label }}</p>
     </div>
 
     <style>
         @media print {
-            nav, header, footer { display: none !important; }
+            .sidebar, .sidebar-backdrop, .mobile-header, .d-print-none { display: none !important; }
+            .main-content { margin-left: 0 !important; }
             body { background: white !important; }
-            .print\:hidden { display: none !important; }
             .shadow-sm { box-shadow: none !important; }
-            .border { border: 1px solid #ddd !important; }
-            /* Hide Stats Cards */
-            .grid-cols-2.md\:grid-cols-5 { display: none !important; }
+            .stat-cards { display: none !important; }
         }
     </style>
 
     {{-- Stats Cards --}}
-    <div class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8 print:hidden">
-        {{-- Hadir --}}
-        <div class="rounded-xl bg-white p-4 shadow-sm border border-green-100">
-            <div class="flex items-center gap-3">
-                <span class="flex h-10 w-10 items-center justify-center rounded-full bg-green-100 text-xl">✅</span>
-                <div>
-                    <p class="text-xs font-medium text-gray-500">Hadir</p>
-                    <p class="text-xl font-bold text-gray-900">{{ $stats['hadir'] }}</p>
+    <div class="row g-3 mb-4 d-print-none stat-cards">
+        @php
+            $statItems = [
+                ['icon' => 'bi-check-circle', 'label' => 'Hadir', 'value' => $stats['hadir'], 'color' => 'success'],
+                ['icon' => 'bi-clock', 'label' => 'Terlambat', 'value' => $stats['terlambat'], 'color' => 'warning'],
+                ['icon' => 'bi-clipboard-minus', 'label' => 'Izin', 'value' => $stats['izin'], 'color' => 'info'],
+                ['icon' => 'bi-hospital', 'label' => 'Sakit', 'value' => $stats['sakit'], 'color' => 'secondary'],
+                ['icon' => 'bi-x-circle', 'label' => 'Alfa', 'value' => $stats['alfa'], 'color' => 'danger'],
+            ];
+        @endphp
+        @foreach($statItems as $item)
+            <div class="col-6 col-md">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body d-flex align-items-center gap-2 py-2">
+                        <span class="rounded-circle d-flex align-items-center justify-content-center bg-{{ $item['color'] }} bg-opacity-10 text-{{ $item['color'] }}" style="width:40px;height:40px;font-size:1.1rem;"><i class="bi {{ $item['icon'] }}"></i></span>
+                        <div>
+                            <p class="mb-0 text-muted" style="font-size:0.7rem;">{{ $item['label'] }}</p>
+                            <p class="mb-0 h5 fw-bold">{{ $item['value'] }}</p>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
-
-        {{-- Terlambat --}}
-        <div class="rounded-xl bg-white p-4 shadow-sm border border-yellow-100">
-            <div class="flex items-center gap-3">
-                <span class="flex h-10 w-10 items-center justify-center rounded-full bg-yellow-100 text-xl">⏰</span>
-                <div>
-                    <p class="text-xs font-medium text-gray-500">Terlambat</p>
-                    <p class="text-xl font-bold text-gray-900">{{ $stats['terlambat'] }}</p>
-                </div>
-            </div>
-        </div>
-
-        {{-- Izin --}}
-        <div class="rounded-xl bg-white p-4 shadow-sm border border-blue-100">
-            <div class="flex items-center gap-3">
-                <span class="flex h-10 w-10 items-center justify-center rounded-full bg-blue-100 text-xl">📝</span>
-                <div>
-                    <p class="text-xs font-medium text-gray-500">Izin</p>
-                    <p class="text-xl font-bold text-gray-900">{{ $stats['izin'] }}</p>
-                </div>
-            </div>
-        </div>
-
-        {{-- Sakit --}}
-        <div class="rounded-xl bg-white p-4 shadow-sm border border-purple-100">
-            <div class="flex items-center gap-3">
-                <span class="flex h-10 w-10 items-center justify-center rounded-full bg-purple-100 text-xl">💊</span>
-                <div>
-                    <p class="text-xs font-medium text-gray-500">Sakit</p>
-                    <p class="text-xl font-bold text-gray-900">{{ $stats['sakit'] }}</p>
-                </div>
-            </div>
-        </div>
-
-        {{-- Alfa --}}
-        <div class="rounded-xl bg-white p-4 shadow-sm border border-red-100">
-            <div class="flex items-center gap-3">
-                <span class="flex h-10 w-10 items-center justify-center rounded-full bg-red-100 text-xl">❌</span>
-                <div>
-                    <p class="text-xs font-medium text-gray-500">Alfa</p>
-                    <p class="text-xl font-bold text-gray-900">{{ $stats['alfa'] }}</p>
-                </div>
-            </div>
-        </div>
+        @endforeach
     </div>
 
-    {{-- Attendance Table --}}
-    <div class="rounded-2xl bg-white shadow-sm border border-gray-100 overflow-hidden">
-        <div class="overflow-x-auto">
-            <table class="w-full whitespace-nowrap">
-                <thead class="bg-gray-50">
+    {{-- Table --}}
+    <div class="card border-0 shadow-sm">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead class="table-dark">
                     <tr>
-                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Nama Siswa</th>
-                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Jam Masuk</th>
-                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Jam Pulang</th>
-                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Status</th>
-                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Keterangan</th>
-                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Bukti</th>
+                        <th class="small text-white fw-semibold">Nama Siswa</th>
+                        <th class="small text-white fw-semibold">Jam Masuk</th>
+                        <th class="small text-white fw-semibold">Jam Pulang</th>
+                        <th class="small text-white fw-semibold">Status</th>
+                        <th class="small text-white fw-semibold">Keterangan</th>
+                        <th class="small text-white fw-semibold">Bukti</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-gray-100 bg-white">
+                <tbody>
                     @forelse($attendances as $row)
-                        <tr class="hover:bg-gray-50 transition-colors">
-                            <td class="px-6 py-4">
-                                <div class="flex items-center">
-                                    <div class="h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center text-xs font-bold text-gray-600 mr-3">
-                                        {{ substr($row->user->name, 0, 2) }}
-                                    </div>
-                                    <div class="text-sm font-medium text-gray-900">{{ $row->user->name }}</div>
-                                </div>
+                        <tr>
+                            <td><div class="d-flex align-items-center gap-2"><div class="rounded-circle bg-light d-flex align-items-center justify-content-center fw-bold text-muted" style="width:32px;height:32px;font-size:0.7rem;flex-shrink:0;">{{ substr($row->user->name, 0, 2) }}</div><span class="small fw-medium">{{ $row->user->name }}</span></div></td>
+                            <td class="small text-muted font-monospace">{{ $row->time_in ?? '—' }}</td>
+                            <td class="small text-muted font-monospace">{{ $row->time_out ?? '—' }}</td>
+                            <td>
+                                @php $cls = match($row->status) { 'hadir' => 'bg-success', 'terlambat' => 'bg-warning text-dark', 'izin' => 'bg-info', 'sakit' => 'bg-secondary', 'alfa' => 'bg-danger', default => 'bg-secondary' }; @endphp
+                                <span class="badge {{ $cls }}">{{ ucfirst($row->status) }}</span>
                             </td>
-                            <td class="px-6 py-4 text-sm text-gray-600 font-mono">
-                                {{ $row->time_in ?? '—' }}
-                            </td>
-                            <td class="px-6 py-4 text-sm text-gray-600 font-mono">
-                                {{ $row->time_out ?? '—' }}
-                            </td>
-                            <td class="px-6 py-4">
-                                <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold
-                                    {{ match($row->status) {
-                                        'hadir' => 'bg-green-100 text-green-700',
-                                        'terlambat' => 'bg-yellow-100 text-yellow-700',
-                                        'izin' => 'bg-blue-100 text-blue-700',
-                                        'sakit' => 'bg-purple-100 text-purple-700',
-                                        'alfa' => 'bg-red-100 text-red-700',
-                                        default => 'bg-gray-100 text-gray-700',
-                                    } }}">
-                                    {{ ucfirst($row->status) }}
-                                </span>
-                            </td>
-                            <td class="px-6 py-4 text-sm text-gray-500">
-                                {{ $row->notes ?? '—' }}
-                            </td>
-                            <td class="px-6 py-4 text-sm">
+                            <td class="small text-muted">{{ $row->notes ?? '—' }}</td>
+                            <td class="small">
                                 @if($row->letter_file)
-                                    <a href="{{ Storage::url($row->letter_file) }}" target="_blank"
-                                       class="inline-flex items-center gap-1 text-blue-600 hover:text-blue-800 hover:underline">
-                                        📄 Lihat
-                                    </a>
-                                @else
-                                    <span class="text-gray-300">—</span>
+                                    <a href="{{ Storage::url($row->letter_file) }}" target="_blank" class="text-primary text-decoration-none"><i class="bi bi-file-earmark-text-fill"></i> Lihat</a>
+                                @else <span class="text-muted">—</span>
                                 @endif
                             </td>
                         </tr>
                     @empty
-                        <tr>
-                            <td colspan="5" class="px-6 py-12 text-center">
-                                <div class="flex flex-col items-center justify-center">
-                                    <span class="text-4xl mb-2">📅</span>
-                                    <p class="text-sm font-medium text-gray-900">Tidak ada data absensi</p>
-                                    <p class="text-xs text-gray-500 mt-1">Belum ada rekaman absensi untuk tanggal ini.</p>
-                                </div>
-                            </td>
-                        </tr>
+                        <tr><td colspan="6" class="text-center py-5"><span class="fs-2"><i class="bi bi-calendar3"></i></span><p class="small fw-medium mt-2 mb-0">Tidak ada data absensi</p><p class="text-muted mb-0" style="font-size:0.75rem;">Belum ada rekaman absensi untuk tanggal ini.</p></td></tr>
                     @endforelse
                 </tbody>
             </table>

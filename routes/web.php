@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Route;
 // PUBLIC ROUTES
 // ══════════════════════════════════════════════════════════════════
 
-Route::get('/', fn() => redirect()->route('login'));
+Route::get('/', fn() => view('welcome'))->name('home');
 
 Route::get('/login', [LoginController::class, 'showLogin'])
     ->name('login')
@@ -71,6 +71,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::put('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password');
+    Route::delete('/profile/avatar', [ProfileController::class, 'deleteAvatar'])->name('profile.avatar.delete');
 
     // Update data orang tua dari halaman profile
    Route::put('/profile/parent/update', [ProfileController::class, 'updateParent'])

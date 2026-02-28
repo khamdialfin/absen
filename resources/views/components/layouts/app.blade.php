@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="id" class="h-full bg-gray-50">
+<html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,28 +7,118 @@
     <title>{{ $title ?? 'Dashboard' }} - Absensi Sekolah</title>
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=inter:400,500,600,700" rel="stylesheet" />
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-    <style>[x-cloak] { display: none !important; }</style>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+
+        /* ── Sidebar ── */
+        .sidebar {
+            width: 220px; position: fixed; top: 0; left: 0; bottom: 0; z-index: 1050;
+            background: #0f1d36; display: flex; flex-direction: column;
+            transform: translateX(-100%); transition: transform 0.3s ease;
+        }
+        .sidebar.show { transform: translateX(0); }
+
+        .sidebar-backdrop {
+            position: fixed; inset: 0; z-index: 1040;
+            background: rgba(0,0,0,0.5); display: none;
+        }
+        .sidebar-backdrop.show { display: block; }
+
+        /* ── Top Navbar ── */
+        .top-navbar {
+            position: sticky; top: 0; z-index: 1030;
+            height: 64px;
+            background: #ffffff;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0 1.25rem;
+            flex-shrink: 0;
+        }
+
+        /* ── Main Content ── */
+        .main-content {
+            margin-left: 0; min-height: 100vh;
+            display: flex; flex-direction: column;
+            background: #e9ecef;
+            transition: margin-left 0.3s ease;
+        }
+
+        /* ── Nav Links ── */
+        .nav-link-sidebar {
+            display: flex; align-items: center; gap: 0.75rem;
+            padding: 0.5rem 0.75rem; border-radius: 0.5rem;
+            font-size: 0.875rem; font-weight: 500; color: #94a3b8;
+            text-decoration: none; transition: all 0.15s;
+        }
+        .nav-link-sidebar:hover { background: rgba(255,255,255,0.08); color: #e2e8f0; }
+        .nav-link-sidebar.active { background: rgba(99,102,241,0.2); color: #a5b4fc; }
+        .nav-section-label {
+            padding: 0 0.75rem; font-size: 0.65rem; font-weight: 600;
+            text-transform: uppercase; letter-spacing: 0.05em; color: #64748b;
+        }
+
+        /* ── Toggle Button ── */
+        .sidebar-toggle-btn {
+            background: none; border: none; cursor: pointer;
+            width: 38px; height: 38px; border-radius: 0.5rem;
+            display: flex; align-items: center; justify-content: center;
+            color: #374151; font-size: 1.35rem; transition: background 0.15s;
+        }
+        .sidebar-toggle-btn:hover { background: #f3f4f6; }
+
+        /* ── Profile Dropdown ── */
+        .profile-dropdown-toggle {
+            display: flex; align-items: center; gap: 0.5rem;
+            background: none; border: none; cursor: pointer;
+            padding: 0.35rem 0.5rem; border-radius: 0.5rem;
+            transition: background 0.15s;
+        }
+        .profile-dropdown-toggle:hover { background: #f3f4f6; }
+        .profile-dropdown-toggle::after { display: none; } /* hide default caret */
+
+        .dropdown-menu {
+            min-width: 180px; border: 1px solid #e5e7eb;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            border-radius: 0.75rem; padding: 0.35rem;
+        }
+        .dropdown-menu .dropdown-item {
+            border-radius: 0.5rem; font-size: 0.875rem; padding: 0.5rem 0.75rem;
+        }
+        .dropdown-menu .dropdown-item:hover { background: #f3f4f6; }
+        .dropdown-menu .dropdown-divider { margin: 0.25rem 0; }
+
+        /* ── Today Info ── */
+        .today-info { text-align: right; line-height: 1.2; }
+        .today-label { font-size: 0.7rem; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: 0.04em; }
+        .today-date { font-size: 0.78rem; font-weight: 500; color: #374151; }
+
+        /* ── Desktop ── */
+        @media (min-width: 992px) {
+            .sidebar { transform: translateX(0) !important; }
+            .sidebar-backdrop { display: none !important; }
+            .main-content { margin-left: 220px; }
+
+            /* Collapsed state */
+            .sidebar.collapsed { transform: translateX(-100%) !important; }
+            .main-content.expanded { margin-left: 0; }
+        }
+    </style>
 </head>
-<body class="h-full text-gray-900 antialiased bg-gray-50 overflow-hidden" x-data="{ sidebarOpen: false }">
+<body>
 
     {{-- Mobile Sidebar Backdrop --}}
-    <div x-show="sidebarOpen" x-transition.opacity 
-         @click="sidebarOpen = false"
-         class="fixed inset-0 z-40 bg-gray-900/50 backdrop-blur-sm lg:hidden" x-cloak></div>
+    <div class="sidebar-backdrop" id="sidebarBackdrop" onclick="closeSidebar()"></div>
 
     {{-- Sidebar --}}
-    <aside class="fixed inset-y-0 left-0 z-50 w-64 bg-white border-r border-gray-200 transform transition-transform duration-300 lg:translate-x-0 flex flex-col"
-           :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'">
-        
+    <aside class="sidebar" id="sidebar">
         {{-- Logo --}}
-        <div class="flex h-16 shrink-0 items-center justify-center border-b border-gray-200 px-6">
-            <div class="flex items-center gap-3">
-                <div class="flex h-9 w-9 items-center justify-center rounded-lg bg-primary-600 text-white font-bold text-sm">
-                    AB
-                </div>
-                <span class="text-lg font-bold text-gray-900">Absensi Sekolah</span>
+        <div class="d-flex flex-column align-items-center justify-content-center" style="padding:1.5rem 1rem 1rem;flex-shrink:0;border-bottom:1px solid rgba(255,255,255,0.08);">
+            <div class="d-flex align-items-center justify-content-center rounded-3 text-white" style="width:52px;height:52px;background:#4f46e5;font-size:1.3rem;">
+                <i class="bi bi-mortarboard-fill"></i>
             </div>
+            <span class="fw-bold text-white mt-2" style="font-size:0.9rem;">HadirIN</span>
         </div>
 
         {{-- Navigation --}}
@@ -44,55 +134,33 @@
 @endif
 
             @if(auth()->user()->isWalikelas())
-                <div class="pt-4 pb-2">
-                    <p class="px-3 text-xs font-semibold text-gray-400 uppercase tracking-wider">Wali Kelas</p>
-                </div>
-                <a href="{{ route('walikelas.rekap') }}"
-                   class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium {{ request()->routeIs('walikelas.*') ? 'bg-primary-50 text-primary-700' : 'text-gray-700 hover:bg-gray-100' }}">
-                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
-                    </svg>
-                    Rekap Kehadiran
+                <div class="mt-3 mb-2"><p class="nav-section-label mb-0">Wali Kelas</p></div>
+                <a href="{{ route('walikelas.rekap') }}" class="nav-link-sidebar {{ request()->routeIs('walikelas.*') ? 'active' : '' }}">
+                    <i class="bi bi-file-earmark-text fs-6"></i> Rekap Kehadiran
                 </a>
             @endif
 
             @if(auth()->user()->isSekertaris())
-                <div class="pt-4 pb-2">
-                    <p class="px-3 text-xs font-semibold text-gray-400 uppercase tracking-wider">Sekretaris</p>
-                </div>
-                <a href="{{ route('sekertaris.scan') }}"
-                   class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium {{ request()->routeIs('sekertaris.scan') ? 'bg-primary-50 text-primary-700' : 'text-gray-700 hover:bg-gray-100' }}">
-                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 013.75 9.375v-4.5zM3.75 14.625c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5a1.125 1.125 0 01-1.125-1.125v-4.5zM13.5 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 0113.5 9.375v-4.5z" />
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 6.75h.75v.75h-.75v-.75zM6.75 16.5h.75v.75h-.75v-.75zM16.5 6.75h.75v.75h-.75v-.75zM13.5 13.5h.75v.75h-.75v-.75zM13.5 19.5h.75v.75h-.75v-.75zM19.5 13.5h.75v.75h-.75v-.75zM19.5 19.5h.75v.75h-.75v-.75zM16.5 16.5h.75v.75h-.75v-.75z" />
-                    </svg>
-                    Scan QR
+                <div class="mt-3 mb-2"><p class="nav-section-label mb-0">Sekretaris</p></div>
+                <a href="{{ route('sekertaris.scan') }}" class="nav-link-sidebar {{ request()->routeIs('sekertaris.scan') ? 'active' : '' }}">
+                    <i class="bi bi-qr-code-scan fs-6"></i> Scan QR
                 </a>
-                <a href="{{ route('sekertaris.attendance.manual') }}"
-                   class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium {{ request()->routeIs('sekertaris.attendance.*') ? 'bg-primary-50 text-primary-700' : 'text-gray-700 hover:bg-gray-100' }}">
-                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
-                    </svg>
-                    Input Manual
+                <a href="{{ route('sekertaris.attendance.manual') }}" class="nav-link-sidebar {{ request()->routeIs('sekertaris.attendance.*') ? 'active' : '' }}">
+                    <i class="bi bi-pencil-square fs-6"></i> Input Manual
                 </a>
-                
-                <div x-data="{ reportsOpen: {{ request()->routeIs('sekertaris.recap*') || request()->routeIs('sekertaris.report*') ? 'true' : 'false' }} }">
-                    <button @click="reportsOpen = !reportsOpen" class="flex w-full items-center justify-between gap-3 px-3 py-2 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-100 mb-1">
-                        <div class="flex items-center gap-3">
-                            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
-                            </svg>
-                            Laporan
+                {{-- Laporan Submenu --}}
+                <div>
+                    <a href="#laporanCollapse" class="nav-link-sidebar d-flex justify-content-between {{ request()->routeIs('sekertaris.recap*') || request()->routeIs('sekertaris.report*') ? 'active' : '' }}" data-bs-toggle="collapse" role="button" aria-expanded="{{ request()->routeIs('sekertaris.recap*') || request()->routeIs('sekertaris.report*') ? 'true' : 'false' }}">
+                        <span><i class="bi bi-file-earmark-bar-graph fs-6 me-2"></i>Laporan</span>
+                        <i class="bi bi-chevron-down" style="font-size:0.7rem;"></i>
+                    </a>
+                    <div class="collapse {{ request()->routeIs('sekertaris.recap*') || request()->routeIs('sekertaris.report*') ? 'show' : '' }}" id="laporanCollapse">
+                        <div class="ps-4 ms-2">
+                            <a href="{{ route('sekertaris.recap') }}" class="nav-link-sidebar {{ request()->routeIs('sekertaris.recap') && !request()->routeIs('sekertaris.recap.*') ? 'active' : '' }}" style="font-size:0.8rem;">Ringkasan Harian</a>
+                            <a href="{{ route('sekertaris.recap.masuk') }}" class="nav-link-sidebar {{ request()->routeIs('sekertaris.recap.masuk') ? 'active' : '' }}" style="font-size:0.8rem;">Rekap Masuk</a>
+                            <a href="{{ route('sekertaris.recap.pulang') }}" class="nav-link-sidebar {{ request()->routeIs('sekertaris.recap.pulang') ? 'active' : '' }}" style="font-size:0.8rem;">Rekap Pulang</a>
+                            <a href="{{ route('sekertaris.report.combined') }}" class="nav-link-sidebar {{ request()->routeIs('sekertaris.report.combined') ? 'active' : '' }}" style="font-size:0.8rem;">Laporan Gabungan</a>
                         </div>
-                        <svg class="h-4 w-4 transition-transform duration-200" :class="reportsOpen ? 'rotate-180' : ''" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
-                        </svg>
-                    </button>
-                    <div x-show="reportsOpen" x-collapse class="pl-11 space-y-1">
-                        <a href="{{ route('sekertaris.recap') }}" class="block px-3 py-2 rounded-lg text-sm font-medium {{ request()->routeIs('sekertaris.recap') ? 'text-primary-700 bg-primary-50' : 'text-gray-600 hover:text-gray-900' }}">Ringkasan Harian</a>
-                        <a href="{{ route('sekertaris.recap.masuk') }}" class="block px-3 py-2 rounded-lg text-sm font-medium {{ request()->routeIs('sekertaris.recap.masuk') ? 'text-primary-700 bg-primary-50' : 'text-gray-600 hover:text-gray-900' }}">Rekap Masuk</a>
-                        <a href="{{ route('sekertaris.recap.pulang') }}" class="block px-3 py-2 rounded-lg text-sm font-medium {{ request()->routeIs('sekertaris.recap.pulang') ? 'text-primary-700 bg-primary-50' : 'text-gray-600 hover:text-gray-900' }}">Rekap Pulang</a>
-                        <a href="{{ route('sekertaris.report.combined') }}" class="block px-3 py-2 rounded-lg text-sm font-medium {{ request()->routeIs('sekertaris.report.combined') ? 'text-primary-700 bg-primary-50' : 'text-gray-600 hover:text-gray-900' }}">Laporan Gabungan</a>
                     </div>
                 </div>
             @endif
@@ -101,8 +169,6 @@
                 <div class="pt-4 pb-2">
                     <p class="px-3 text-xs font-semibold text-gray-400 uppercase tracking-wider">Bendahara</p>
                 </div>
-<<<<<<< HEAD
-=======
                 <a href="{{ route('bendahara.dashboard') }}"
                    class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium {{ request()->routeIs('bendahara.dashboard') ? 'bg-primary-50 text-primary-700' : 'text-gray-700 hover:bg-gray-100' }}">
                     <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
@@ -110,7 +176,6 @@
     </svg>
                     Dashboard
                 </a>
->>>>>>> 682f2970c2ed95ee3a710c0213e8d4bcb47e0ed1
                 <a href="{{ route('bendahara.pemasukan') }}"
                    class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium {{ request()->routeIs('bendahara.pemasukan') ? 'bg-green-50 text-green-700' : 'text-gray-700 hover:bg-gray-100' }}">
                     <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
@@ -118,123 +183,144 @@
                     </svg>
                     Pemasukan
                 </a>
-                <a href="{{ route('bendahara.pengeluaran') }}"
-                   class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium {{ request()->routeIs('bendahara.pengeluaran') ? 'bg-red-50 text-red-700' : 'text-gray-700 hover:bg-gray-100' }}">
-                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 12h-15" />
-                    </svg>
-                    Pengeluaran
+                <a href="{{ route('bendahara.pengeluaran') }}" class="nav-link-sidebar {{ request()->routeIs('bendahara.pengeluaran') ? 'active' : '' }}" style="{{ request()->routeIs('bendahara.pengeluaran') ? 'background:#fef2f2;color:#b91c1c;' : '' }}">
+                    <i class="bi bi-dash-circle fs-6"></i> Pengeluaran
                 </a>
-                <a href="{{ route('bendahara.laporan') }}"
-                   class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium {{ request()->routeIs('bendahara.laporan') ? 'bg-blue-50 text-blue-700' : 'text-gray-700 hover:bg-gray-100' }}">
-                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
-                    </svg>
-                    Laporan
+                <a href="{{ route('bendahara.laporan') }}" class="nav-link-sidebar {{ request()->routeIs('bendahara.laporan') ? 'active' : '' }}">
+                    <i class="bi bi-file-earmark-text fs-6"></i> Laporan
                 </a>
             @endif
 
             @if(auth()->user()->isSiswa())
-                <div class="pt-4 pb-2">
-                    <p class="px-3 text-xs font-semibold text-gray-400 uppercase tracking-wider">Siswa</p>
-                </div>
-                <a href="{{ route('siswa.qr') }}"
-                   class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium {{ request()->routeIs('siswa.qr') ? 'bg-primary-50 text-primary-700' : 'text-gray-700 hover:bg-gray-100' }}">
-                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 013.75 9.375v-4.5zM3.75 14.625c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5a1.125 1.125 0 01-1.125-1.125v-4.5zM13.5 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 0113.5 9.375v-4.5z" />
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 6.75h.75v.75h-.75v-.75zM6.75 16.5h.75v.75h-.75v-.75zM16.5 6.75h.75v.75h-.75v-.75zM13.5 13.5h.75v.75h-.75v-.75zM13.5 19.5h.75v.75h-.75v-.75zM19.5 13.5h.75v.75h-.75v-.75zM19.5 19.5h.75v.75h-.75v-.75zM16.5 16.5h.75v.75h-.75v-.75z" />
-                    </svg>
-                    Kode QR
+                <a href="{{ route('siswa.qr') }}" class="nav-link-sidebar {{ request()->routeIs('siswa.qr') ? 'active' : '' }}">
+                    <i class="bi bi-qr-code fs-6"></i> Kode QR
                 </a>
-                <a href="{{ route('siswa.riwayat') }}"
-                   class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium {{ request()->routeIs('siswa.riwayat') ? 'bg-primary-50 text-primary-700' : 'text-gray-700 hover:bg-gray-100' }}">
-                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                    Riwayat
+                <a href="{{ route('siswa.riwayat') }}" class="nav-link-sidebar {{ request()->routeIs('siswa.riwayat') ? 'active' : '' }}">
+                    <i class="bi bi-clock-history fs-6"></i> Riwayat
                 </a>
             @endif
         </nav>
-
-        {{-- Profile Bottom --}}
-        <div class="border-t border-gray-200 p-4">
-            <div class="flex items-center gap-3 w-full">
-                @if(auth()->user()->avatar)
-                    <img src="{{ auth()->user()->avatar }}" alt="Avatar" class="h-9 w-9 rounded-full ring-2 ring-gray-100 shrink-0">
-                @else
-                    <div class="h-9 w-9 rounded-full bg-primary-100 flex items-center justify-center text-primary-700 font-semibold text-sm shrink-0">
-                        {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
-                    </div>
-                @endif
-                <a href="{{ route('profile.show') }}" class="flex-1 min-w-0 group hover:text-primary-600 transition-colors">
-                    <p class="text-sm font-medium text-gray-900 truncate group-hover:text-primary-600 transition-colors">{{ auth()->user()->name }}</p>
-                    <p class="text-xs text-gray-500 capitalize truncate">{{ auth()->user()->role }}</p>
-                </a>
-                <form method="POST" action="{{ route('logout') }}">
-                    @csrf
-                    <button type="submit" class="p-2 text-gray-400 hover:text-red-600 transition-colors rounded-lg hover:bg-red-50" title="Logout">
-                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75" />
-                        </svg>
-                    </button>
-                </form>
-            </div>
-        </div>
     </aside>
 
     {{-- Main Content Area --}}
-    <main class="flex flex-col h-full overflow-hidden lg:pl-64 transition-all duration-300">
-        {{-- Mobile Header --}}
-        <header class="bg-white border-b border-gray-200 h-16 flex items-center justify-between px-4 lg:hidden shrink-0">
-            <div class="flex items-center gap-3">
-                <button @click="sidebarOpen = true" class="text-gray-500 hover:text-gray-700">
-                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
-                    </svg>
+    <div class="main-content" id="mainContent">
+
+        {{-- Top Navbar --}}
+        <div class="top-navbar">
+            {{-- Left side: Toggle + Page Title --}}
+            <div class="d-flex align-items-center gap-3">
+                <button class="sidebar-toggle-btn" onclick="toggleSidebar()" id="sidebarToggleBtn" title="Toggle Sidebar">
+                    <i class="bi bi-list"></i>
                 </button>
-                <span class="font-bold text-gray-900">Absensi Sekolah</span>
+                <h1 class="mb-0 fw-semibold" style="font-size:1.05rem;color:#1f2937;">{{ $title ?? 'Dashboard' }}</h1>
             </div>
-            <a href="{{ route('profile.show') }}">
-                @if(auth()->user()->avatar)
-                    <img src="{{ auth()->user()->avatar }}" alt="Avatar" class="h-8 w-8 rounded-full">
-                @else
-                    <div class="h-8 w-8 rounded-full bg-primary-100 flex items-center justify-center text-primary-700 font-semibold text-sm">
-                        {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
-                    </div>
-                @endif
-            </a>
-        </header>
+
+            {{-- Right side: Today info + Profile Dropdown --}}
+            <div class="d-flex align-items-center gap-3">
+                {{-- Today + Date --}}
+                <div class="today-info d-none d-sm-block">
+                    <div class="today-label">Today</div>
+                    <div class="today-date">{{ now()->translatedFormat('l, d F Y') }}</div>
+                </div>
+
+                {{-- Profile Dropdown --}}
+                <div class="dropdown">
+                    <button class="profile-dropdown-toggle dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        @if(auth()->user()->avatar)
+                            <img src="{{ auth()->user()->avatar }}" alt="Avatar" class="rounded-circle" style="width:36px;height:36px;object-fit:cover;">
+                        @else
+                            <div class="rounded-circle d-flex align-items-center justify-content-center fw-semibold text-white" style="width:36px;height:36px;background:#4f46e5;font-size:0.8rem;">{{ strtoupper(substr(auth()->user()->name, 0, 1)) }}</div>
+                        @endif
+                        <div class="d-none d-md-block text-start" style="line-height:1.2;">
+                            <span class="d-block fw-medium" style="font-size:0.85rem;color:#1f2937;">{{ auth()->user()->name }}</span>
+                            <span class="d-block text-capitalize" style="font-size:0.7rem;color:#6b7280;">{{ auth()->user()->role }}</span>
+                        </div>
+                        <i class="bi bi-chevron-down" style="font-size:0.65rem;color:#9ca3af;"></i>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end mt-2">
+                        <li>
+                            <a class="dropdown-item d-flex align-items-center gap-2" href="{{ route('profile.show') }}">
+                                <i class="bi bi-person-circle" style="color:#6366f1;"></i> Profile
+                            </a>
+                        </li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <form method="POST" action="{{ route('logout') }}">
+                                @csrf
+                                <button type="submit" class="dropdown-item d-flex align-items-center gap-2 text-danger">
+                                    <i class="bi bi-box-arrow-right"></i> Logout
+                                </button>
+                            </form>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
 
         {{-- Content Scrollable --}}
-        <div class="flex-1 overflow-y-auto bg-gray-50">
+        <div class="flex-grow-1 overflow-auto" style="background:#e9ecef;">
             {{-- Flash Messages --}}
             @if(session('success'))
-                <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 mt-6">
-                    <div class="rounded-xl bg-green-50 border border-green-200 p-4 flex items-center gap-3 shadow-sm">
-                        <svg class="h-5 w-5 text-green-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                        <p class="text-sm font-medium text-green-800">{{ session('success') }}</p>
+                <div class="container-fluid px-3 px-lg-4 mt-3" style="max-width:1200px;">
+                    <div class="alert alert-success d-flex align-items-center gap-2 py-2 small shadow-sm">
+                        <i class="bi bi-check-circle-fill"></i> {{ session('success') }}
                     </div>
                 </div>
             @endif
 
             @if(session('error'))
-                <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 mt-6">
-                    <div class="rounded-xl bg-red-50 border border-red-200 p-4 flex items-center gap-3 shadow-sm">
-                        <svg class="h-5 w-5 text-red-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
-                        </svg>
-                        <p class="text-sm font-medium text-red-800">{{ session('error') }}</p>
+                <div class="container-fluid px-3 px-lg-4 mt-3" style="max-width:1200px;">
+                    <div class="alert alert-danger d-flex align-items-center gap-2 py-2 small shadow-sm">
+                        <i class="bi bi-exclamation-circle-fill"></i> {{ session('error') }}
                     </div>
                 </div>
             @endif
 
-            <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
+            <div class="container-fluid px-3 px-lg-4 py-4" style="max-width:1200px;">
                 {{ $slot }}
             </div>
         </div>
-    </main>
+    </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const sidebar = document.getElementById('sidebar');
+        const backdrop = document.getElementById('sidebarBackdrop');
+        const mainContent = document.getElementById('mainContent');
+
+        function isDesktop() {
+            return window.innerWidth >= 992;
+        }
+
+        function toggleSidebar() {
+            if (isDesktop()) {
+                sidebar.classList.toggle('collapsed');
+                mainContent.classList.toggle('expanded');
+            } else {
+                if (sidebar.classList.contains('show')) {
+                    closeSidebar();
+                } else {
+                    openSidebar();
+                }
+            }
+        }
+
+        function openSidebar() {
+            sidebar.classList.add('show');
+            backdrop.classList.add('show');
+        }
+
+        function closeSidebar() {
+            sidebar.classList.remove('show');
+            backdrop.classList.remove('show');
+        }
+
+        // Close sidebar on window resize to desktop if mobile overlay is open
+        window.addEventListener('resize', function() {
+            if (isDesktop()) {
+                backdrop.classList.remove('show');
+            }
+        });
+    </script>
 </body>
 </html>

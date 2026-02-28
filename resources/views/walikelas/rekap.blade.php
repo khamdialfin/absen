@@ -1,13 +1,11 @@
 <x-layouts.app title="Rekap Kehadiran">
-    <div class="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 print:hidden">
+    <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start gap-3 mb-4 d-print-none">
         <div>
-            <h1 class="text-2xl font-bold text-gray-900">Rekap Kehadiran</h1>
-            <p class="text-sm text-gray-500 mt-1">Laporan kehadiran siswa</p>
+            <h1 class="h4 fw-bold">Rekap Kehadiran</h1>
+            <p class="text-muted small">Laporan kehadiran siswa</p>
         </div>
-
-        <div class="flex items-center gap-3">
-            {{-- Filter --}}
-            <form action="{{ route('walikelas.rekap') }}" method="GET" class="flex items-center gap-2">
+        <div class="d-flex flex-wrap align-items-end gap-2">
+            <form action="{{ route('walikelas.rekap') }}" method="GET" class="d-flex align-items-center gap-2">
                 @include('sekertaris.partials.filter')
             </form>
             
@@ -30,83 +28,61 @@
     </div>
 
     {{-- Tabel Rekap --}}
-    <div class="rounded-2xl bg-white shadow-sm border border-gray-100 overflow-hidden">
-        <div class="overflow-x-auto">
-            <table class="w-full">
-                <thead>
-                    <tr class="bg-gray-50 border-b border-gray-200">
-                        <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider w-12">No</th>
-                        <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Nama Siswa</th>
+    <div class="card border-0 shadow-sm">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead class="table-dark">
+                    <tr>
+                        <th class="small text-white fw-semibold">No</th>
+                        <th class="small text-white fw-semibold">Nama Siswa</th>
                         @if($isDaily)
-                            <th class="px-4 py-3 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider">Jam Masuk</th>
-                            <th class="px-4 py-3 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider">Jam Pulang</th>
-                            <th class="px-4 py-3 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider">Status</th>
+                            <th class="small text-white fw-semibold text-center">Jam Masuk</th>
+                            <th class="small text-white fw-semibold text-center">Jam Pulang</th>
+                            <th class="small text-white fw-semibold text-center">Status</th>
                         @else
-                            <th class="px-4 py-3 text-center text-xs font-semibold text-green-600 uppercase tracking-wider">Hadir</th>
-                            <th class="px-4 py-3 text-center text-xs font-semibold text-yellow-600 uppercase tracking-wider">Terlambat</th>
-                            <th class="px-4 py-3 text-center text-xs font-semibold text-blue-600 uppercase tracking-wider">Izin</th>
-                            <th class="px-4 py-3 text-center text-xs font-semibold text-purple-600 uppercase tracking-wider">Sakit</th>
-                            <th class="px-4 py-3 text-center text-xs font-semibold text-red-600 uppercase tracking-wider">Alfa</th>
-                            <th class="px-4 py-3 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider">Total</th>
-                            <th class="px-4 py-3 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider">%</th>
+                            <th class="small text-white fw-semibold text-center text-success">Hadir</th>
+                            <th class="small text-white fw-semibold text-center text-warning">Terlambat</th>
+                            <th class="small text-white fw-semibold text-center text-info">Izin</th>
+                            <th class="small text-white fw-semibold text-center" style="color:#6f42c1;">Sakit</th>
+                            <th class="small text-white fw-semibold text-center text-danger">Alfa</th>
+                            <th class="small text-white fw-semibold text-center text-white">Total</th>
+                            <th class="small text-white fw-semibold text-center text-white">%</th>
                         @endif
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-gray-50">
+                <tbody>
                     @forelse($rekap as $index => $row)
-                        <tr class="hover:bg-gray-50 transition-colors">
-                            <td class="px-4 py-3 text-sm text-gray-500">{{ $index + 1 }}</td>
-                            <td class="px-4 py-3 text-sm font-medium text-gray-900">{{ $row['student']->name }}</td>
-                            
+                        <tr>
+                            <td class="small text-muted">{{ $index + 1 }}</td>
+                            <td class="small fw-medium">{{ $row['student']->name }}</td>
                             @if($isDaily)
-                                <td class="px-4 py-3 text-sm text-center text-gray-600 font-mono">{{ $row['time_in'] }}</td>
-                                <td class="px-4 py-3 text-sm text-center text-gray-600 font-mono">{{ $row['time_out'] }}</td>
-                                <td class="px-4 py-3 text-sm text-center">
+                                <td class="small text-center text-muted font-monospace">{{ $row['time_in'] }}</td>
+                                <td class="small text-center text-muted font-monospace">{{ $row['time_out'] }}</td>
+                                <td class="small text-center">
                                     @php
-                                        $badges = [
-                                            'hadir'     => 'bg-green-100 text-green-700',
-                                            'terlambat' => 'bg-yellow-100 text-yellow-700',
-                                            'izin'      => 'bg-blue-100 text-blue-700',
-                                            'sakit'     => 'bg-purple-100 text-purple-700',
-                                            'alfa'      => 'bg-red-100 text-red-700',
-                                            '-'         => 'bg-gray-100 text-gray-500', 
-                                        ];
-                                        $statusClass = $badges[$row['status']] ?? 'bg-gray-100 text-gray-500';
+                                        $cls = match($row['status']) {
+                                            'hadir' => 'bg-success',
+                                            'terlambat' => 'bg-warning text-dark',
+                                            'izin' => 'bg-info',
+                                            'sakit' => 'bg-secondary',
+                                            'alfa' => 'bg-danger',
+                                            default => 'bg-secondary',
+                                        };
                                     @endphp
-                                    <span class="inline-flex items-center justify-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $statusClass }}">
-                                        {{ ucfirst($row['status']) }}
-                                    </span>
+                                    <span class="badge {{ $cls }}">{{ ucfirst($row['status']) }}</span>
                                 </td>
                             @else
-                                <td class="px-4 py-3 text-sm text-center">
-                                    <span class="inline-flex items-center justify-center h-6 w-6 rounded bg-green-50 text-green-700 text-xs font-bold">{{ $row['hadir'] }}</span>
-                                </td>
-                                <td class="px-4 py-3 text-sm text-center">
-                                    <span class="inline-flex items-center justify-center h-6 w-6 rounded bg-yellow-50 text-yellow-700 text-xs font-bold">{{ $row['terlambat'] }}</span>
-                                </td>
-                                <td class="px-4 py-3 text-sm text-center">
-                                    <span class="inline-flex items-center justify-center h-6 w-6 rounded bg-blue-50 text-blue-700 text-xs font-bold">{{ $row['izin'] }}</span>
-                                </td>
-                                <td class="px-4 py-3 text-sm text-center">
-                                    <span class="inline-flex items-center justify-center h-6 w-6 rounded bg-purple-50 text-purple-700 text-xs font-bold">{{ $row['sakit'] }}</span>
-                                </td>
-                                <td class="px-4 py-3 text-sm text-center">
-                                    <span class="inline-flex items-center justify-center h-6 w-6 rounded bg-red-50 text-red-700 text-xs font-bold">{{ $row['alfa'] }}</span>
-                                </td>
-                                <td class="px-4 py-3 text-sm text-center font-semibold text-gray-700">
-                                    {{ $row['total_hadir'] }}
-                                </td>
-                                <td class="px-4 py-3 text-sm text-center font-bold {{ $row['persentase'] >= 75 ? 'text-green-600' : 'text-red-500' }}">
-                                    {{ $row['persentase'] }}%
-                                </td>
+                                <td class="small text-center"><span class="badge bg-success bg-opacity-10 text-success">{{ $row['hadir'] }}</span></td>
+                                <td class="small text-center"><span class="badge bg-warning bg-opacity-10 text-warning">{{ $row['terlambat'] }}</span></td>
+                                <td class="small text-center"><span class="badge bg-info bg-opacity-10 text-info">{{ $row['izin'] }}</span></td>
+                                <td class="small text-center"><span class="badge bg-secondary bg-opacity-10 text-secondary">{{ $row['sakit'] }}</span></td>
+                                <td class="small text-center"><span class="badge bg-danger bg-opacity-10 text-danger">{{ $row['alfa'] }}</span></td>
+                                <td class="small text-center fw-semibold">{{ $row['total_hadir'] }}</td>
+                                <td class="small text-center fw-bold {{ $row['persentase'] >= 75 ? 'text-success' : 'text-danger' }}">{{ $row['persentase'] }}%</td>
                             @endif
                         </tr>
                     @empty
-                        <tr>
-                            <td colspan="{{ $isDaily ? 5 : 9 }}" class="px-4 py-8 text-center text-sm text-gray-400">
-                                Tidak ada data siswa
-                            </td>
-                        </tr>
+                        <tr><td colspan="{{ $isDaily ? 5 : 9 }}" class="text-center text-muted small py-4">Tidak ada data siswa</td></tr>
                     @endforelse
                 </tbody>
             </table>

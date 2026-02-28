@@ -1,4 +1,4 @@
-<div x-data="{ type: '{{ request('type', 'daily') }}' }" class="flex flex-wrap items-end gap-3 print:hidden">
+<div class="d-flex flex-wrap align-items-end gap-2 d-print-none">
     {{-- Filter Type --}}
     <div>
         <label for="filter_type" class="block text-xs font-medium text-gray-700 mb-1">Tipe Laporan</label>
@@ -45,14 +45,12 @@ class="h-10 rounded-lg border border-gray-300 bg-white px-2 text-sm leading-10 s
         <select name="year" id="year"
                 class="h-10 rounded-lg border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 text-base px-2">
             @foreach(range(2025, now()->year + 1) as $y)
-                <option value="{{ $y }}" {{ request('year', now()->year) == $y ? 'selected' : '' }}>
-                    {{ $y }}
-                </option>
+                <option value="{{ $y }}" {{ request('year', now()->year) == $y ? 'selected' : '' }}>{{ $y }}</option>
             @endforeach
         </select>
     </div>
 
-    {{-- Submit Button --}}
+    {{-- Submit --}}
     <div>
         <button type="submit"
                 class="h-10 rounded-lg bg-primary-600 px-4 text-sm font-medium text-white shadow-sm hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2">
@@ -60,3 +58,14 @@ class="h-10 rounded-lg border border-gray-300 bg-white px-2 text-sm leading-10 s
         </button>
     </div>
 </div>
+
+<script>
+    function toggleFilterFields() {
+        var type = document.getElementById('filter_type').value;
+        document.getElementById('field-daily').style.display = (type === 'daily') ? '' : 'none';
+        document.getElementById('field-weekly').style.display = (type === 'weekly') ? '' : 'none';
+        document.getElementById('field-monthly').style.display = (type === 'monthly') ? '' : 'none';
+        document.getElementById('field-year').style.display = (type === 'monthly' || type === 'yearly') ? '' : 'none';
+    }
+    document.addEventListener('DOMContentLoaded', toggleFilterFields);
+</script>
