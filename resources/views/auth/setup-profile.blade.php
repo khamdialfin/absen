@@ -24,10 +24,10 @@
             <div class="rounded-circle bg-white text-primary d-flex align-items-center justify-content-center fw-bold small" style="width:32px;height:32px;">2</div>
             <span class="text-white small fw-medium">Profil</span>
         </div>
-        <div class="w-8 h-0.5 bg-white/50"></div>
-         <div class="flex items-center gap-1.5">
-            <div class="h-8 w-8 rounded-full bg-white/30 text-white flex items-center justify-center text-sm font-bold">3</div>
-            <span class="text-white/80 text-xs font-medium">Profile Parent</span>
+         <div style="width:32px;height:2px;background:rgba(255,255,255,0.5);"></div>
+          <div class="d-flex align-items-center gap-1">
+            <div class="rounded-circle d-flex align-items-center justify-content-center fw-bold small" style="width:32px;height:32px;background:rgba(255,255,255,0.2);color:rgba(255,255,255,0.5);">3</div>
+            <span class="small" style="color:rgba(255,255,255,0.5);">Profil Parent</span>
         </div>
     </div>
 
