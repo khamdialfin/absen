@@ -19,8 +19,10 @@ class RekapController extends Controller
         $month = $request->get('month', now()->month);
         $year  = $request->get('year', now()->year);
 
-        // Ambil semua siswa
+        // Ambil siswa dari kelas walikelas
+        $kelas = auth()->user()->kelas;
         $students = User::where('role', 'siswa')
+            ->where('kelas', $kelas)
             ->orderBy('name')
             ->get();
 
@@ -48,8 +50,10 @@ class RekapController extends Controller
             $label     = "Tahun " . $year;
         }
 
-        // Ambil data attendance dalam range
+        // Ambil data attendance dalam range (hanya siswa kelas ini)
+        $studentIds = $students->pluck('id');
         $attendances = Attendance::whereBetween('date', [$startDate->toDateString(), $endDate->toDateString()])
+            ->whereIn('user_id', $studentIds)
             ->get()
             ->groupBy('user_id');
 
@@ -130,7 +134,8 @@ class RekapController extends Controller
         $month = $request->get('month', now()->month);
         $year  = $request->get('year', now()->year);
 
-        $students = User::where('role', 'siswa')->orderBy('name')->get();
+        $kelas = auth()->user()->kelas;
+        $students = User::where('role', 'siswa')->where('kelas', $kelas)->orderBy('name')->get();
         $isDaily = ($type === 'daily');
 
         if ($type === 'daily') {
@@ -151,7 +156,9 @@ class RekapController extends Controller
             $filename  = "rekap_yearly_{$year}.csv";
         }
 
+        $studentIds = $students->pluck('id');
         $attendances = Attendance::whereBetween('date', [$startDate->toDateString(), $endDate->toDateString()])
+            ->whereIn('user_id', $studentIds)
             ->get()
             ->groupBy('user_id');
 

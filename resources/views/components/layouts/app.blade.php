@@ -115,9 +115,9 @@
     <aside class="sidebar" id="sidebar">
         {{-- Logo --}}
         <div class="d-flex flex-column align-items-center justify-content-center" style="padding:1.5rem 1rem 1rem;flex-shrink:0;border-bottom:1px solid rgba(255,255,255,0.08);">
-            <div class="d-flex align-items-center justify-content-center rounded-3 text-white" style="width:52px;height:52px;background:#4f46e5;font-size:1.3rem;">
-                <i class="bi bi-mortarboard-fill"></i>
-            </div>
+            <a class="navbar-brand d-flex align-items-center gap-2 fw-bold" href="/">
+                <img src="{{ asset('images/logo.png') }}" alt="HadirIN" style="height:52px;">
+            </a>
             <span class="fw-bold text-white mt-2" style="font-size:0.9rem;">HadirIN</span>
         </div>
 
@@ -135,8 +135,11 @@
 
             @if(auth()->user()->isWalikelas())
                 <div class="mt-3 mb-2"><p class="nav-section-label mb-0">Wali Kelas</p></div>
-                <a href="{{ route('walikelas.rekap') }}" class="nav-link-sidebar {{ request()->routeIs('walikelas.*') ? 'active' : '' }}">
+                <a href="{{ route('walikelas.rekap') }}" class="nav-link-sidebar {{ request()->routeIs('walikelas.rekap') ? 'active' : '' }}">
                     <i class="bi bi-file-earmark-text fs-6"></i> Rekap Kehadiran
+                </a>
+                <a href="{{ route('walikelas.users') }}" class="nav-link-sidebar {{ request()->routeIs('walikelas.users') ? 'active' : '' }}">
+                    <i class="bi bi-people-fill fs-6"></i> Kelola Akun
                 </a>
             @endif
 
