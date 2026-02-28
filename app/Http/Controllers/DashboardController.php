@@ -50,7 +50,11 @@ class DashboardController extends Controller
             ->limit(5)
             ->get();
 
-        return compact('totalSiswa', 'stats', 'recentActivities');
+        // Status sesi absensi
+        $morningActive   = \Illuminate\Support\Facades\Cache::get('session:morning:' . $today, false);
+        $afternoonActive = \Illuminate\Support\Facades\Cache::get('session:afternoon:' . $today, false);
+
+        return compact('totalSiswa', 'stats', 'recentActivities', 'morningActive', 'afternoonActive');
     }
 
     /**

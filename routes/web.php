@@ -89,6 +89,12 @@ Route::middleware(['auth', 'password.set'])->group(function () {
             Route::get('/rekap/export', [RekapController::class, 'export'])
                 ->name('rekap.export');
 
+            // Session Control (hanya walikelas yang bisa buka/tutup sesi)
+            Route::post('/session/start', [AttendanceController::class, 'startSession'])
+                ->name('session.start');
+            Route::post('/session/stop', [AttendanceController::class, 'stopSession'])
+                ->name('session.stop');
+
             // Manage Users (Admin)
             Route::get('/users', [\App\Http\Controllers\ManageUsersController::class, 'index'])
                 ->name('users');
@@ -109,10 +115,6 @@ Route::middleware(['auth', 'password.set'])->group(function () {
                 ->name('scan');
             Route::post('/attendance/scan', [AttendanceController::class, 'processScan'])
                 ->name('attendance.scan');
-            Route::post('/session/start', [AttendanceController::class, 'startSession'])
-                ->name('session.start');
-            Route::post('/session/stop', [AttendanceController::class, 'stopSession'])
-                ->name('session.stop');
             Route::get('/attendance/manual', [AttendanceController::class, 'manualForm'])
                 ->name('attendance.manual');
             Route::post('/attendance/manual', [AttendanceController::class, 'storeManual'])

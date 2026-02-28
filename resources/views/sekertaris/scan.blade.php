@@ -2,7 +2,7 @@
     <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-2 mb-4">
         <div>
             <h1 class="h4 fw-bold mb-0">Scanner QR Code</h1>
-            <p class="text-muted small mb-0">Kelola sesi absensi dan scan QR Code siswa</p>
+            <p class="text-muted small mb-0">Scan QR Code siswa untuk absensi</p>
         </div>
         <a href="{{ route('sekertaris.recap') }}" class="btn btn-outline-secondary btn-sm fw-semibold bg-primary text-white"><i class="bi bi-clipboard-data"></i> Lihat Rekapan</a>
     </div>
@@ -10,48 +10,40 @@
     <div class="row g-4">
         {{-- Left Column --}}
         <div class="col-lg-6">
-            {{-- Session Controls --}}
+            {{-- Session Status (Read-Only) --}}
             <div class="card border-0 shadow-sm mb-3 rounded-2">
                 <div class="card-body">
-                    <h2 class="small fw-semibold text-muted mb-3">Kontrol Sesi Absensi</h2>
+                    <h2 class="small fw-semibold text-muted mb-3"><i class="bi bi-info-circle me-1"></i>Status Sesi Absensi</h2>
                     <div class="row g-3">
-                        {{-- Pagi --}}
                         <div class="col-6">
                             <div class="rounded-3 border border-2 p-3 text-center {{ $morningActive ? 'border-success bg-success bg-opacity-10' : 'border-secondary-subtle bg-light' }}">
                                 <span class="fs-2"><i class="bi bi-sunrise-fill"></i></span>
                                 <p class="small fw-semibold mb-0 mt-0">Sesi Pagi</p>
-                                <p class="mb-2 {{ $morningActive ? 'text-success fw-semibold' : 'text-muted' }}" style="font-size:0.7rem;">
+                                <p class="mb-0 {{ $morningActive ? 'text-success fw-semibold' : 'text-muted' }}" style="font-size:0.7rem;">
                                     {{ $morningActive ? '● AKTIF' : '○ NONAKTIF' }}
                                 </p>
-                                @if(!$morningActive)
-                                    <button onclick="controlSession('morning', 'start')" class="btn btn-success btn-sm w-100"><i class="bi bi-play-fill"></i> Mulai Sesi</button>
-                                @else
-                                    <button onclick="controlSession('morning', 'stop')" class="btn btn-danger btn-sm w-100"><i class="bi bi-stop-fill"></i> Tutup Sesi</button>
-                                @endif
                             </div>
                         </div>
-                        {{-- Sore --}}
                         <div class="col-6">
                             <div class="rounded-3 border border-2 p-3 text-center {{ $afternoonActive ? 'border-primary bg-primary bg-opacity-10' : 'border-secondary-subtle bg-light' }}">
                                 <span class="fs-2"><i class="bi bi-sunset-fill"></i></span>
                                 <p class="small fw-semibold mb-0 mt-0">Sesi Sore</p>
-                                <p class="mb-2 {{ $afternoonActive ? 'text-primary fw-semibold' : 'text-muted' }}" style="font-size:0.7rem;">
+                                <p class="mb-0 {{ $afternoonActive ? 'text-primary fw-semibold' : 'text-muted' }}" style="font-size:0.7rem;">
                                     {{ $afternoonActive ? '● AKTIF' : '○ NONAKTIF' }}
                                 </p>
-                                @if(!$afternoonActive)
-                                    <button onclick="controlSession('afternoon', 'start')" class="btn btn-success btn-sm w-100"><i class="bi bi-play-fill"></i> Mulai Sesi</button>
-                                @else
-                                    <button onclick="controlSession('afternoon', 'stop')" class="btn btn-danger btn-sm w-100"><i class="bi bi-stop-fill"></i> Tutup Sesi</button>
-                                @endif
                             </div>
                         </div>
                     </div>
-                    {{-- Status Bar --}}
                     <div class="bg-light rounded-3 p-2 text-center mt-3">
                         <p class="mb-0 text-muted" style="font-size:0.75rem;">
                             Sudah absen: <strong class="text-dark">{{ $todayAttendances->count() }}</strong> / {{ $totalSiswa }} siswa
                         </p>
                     </div>
+                    @if(!$morningActive && !$afternoonActive)
+                        <div class="alert alert-warning small py-2 mt-3 mb-0">
+                            <i class="bi bi-exclamation-triangle me-1"></i> Belum ada sesi aktif. Hubungi Walikelas untuk membuka sesi absensi.
+                        </div>
+                    @endif
                 </div>
             </div>
 
@@ -157,38 +149,7 @@
     <script>
         const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
 
-        // ── Session Control ──
-        async function controlSession(session, action) {
-            const url = action === 'start'
-                ? '{{ route("sekertaris.session.start") }}'
-                : '{{ route("sekertaris.session.stop") }}';
 
-            const label = session === 'morning' ? 'Pagi' : 'Sore';
-
-            if (action === 'stop') {
-                if (!confirm(`Tutup Sesi ${label}?\n\nSiswa yang belum absen akan otomatis di-mark ALFA (tidak hadir).`)) {
-                    return;
-                }
-            }
-
-            try {
-                const response = await fetch(url, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': csrfToken,
-                        'Accept': 'application/json',
-                    },
-                    body: JSON.stringify({ session }),
-                });
-
-                const data = await response.json();
-                alert(data.message);
-                window.location.reload();
-            } catch (error) {
-                alert('Gagal: ' + error.message);
-            }
-        }
 
         // ── Scanner (only if session active) ──
         @if($morningActive || $afternoonActive)

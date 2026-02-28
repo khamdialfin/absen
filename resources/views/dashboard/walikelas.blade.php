@@ -53,9 +53,49 @@
             </div>
         </div>
 
-        {{-- Quick Actions --}}
+        {{-- Session Control & Quick Actions --}}
         <div class="col-lg-4">
-            <div class="card border-0 shadow-sm h-100">
+            {{-- Kontrol Sesi Absensi --}}
+            <div class="card border-0 shadow-sm mb-3">
+                <div class="card-body">
+                    <h2 class="small fw-semibold text-muted mb-3"><i class="bi bi-clock-history me-1"></i>Kontrol Sesi Absensi</h2>
+                    <div class="row g-3">
+                        {{-- Pagi --}}
+                        <div class="col-6">
+                            <div class="rounded-3 border border-2 p-3 text-center {{ $morningActive ? 'border-success bg-success bg-opacity-10' : 'border-secondary-subtle bg-light' }}">
+                                <span class="fs-2"><i class="bi bi-sunrise-fill"></i></span>
+                                <p class="small fw-semibold mb-0 mt-0">Sesi Pagi</p>
+                                <p class="mb-2 {{ $morningActive ? 'text-success fw-semibold' : 'text-muted' }}" style="font-size:0.7rem;">
+                                    {{ $morningActive ? '● AKTIF' : '○ NONAKTIF' }}
+                                </p>
+                                @if(!$morningActive)
+                                    <button onclick="controlSession('morning', 'start')" class="btn btn-success btn-sm w-100"><i class="bi bi-play-fill"></i> Mulai</button>
+                                @else
+                                    <button onclick="controlSession('morning', 'stop')" class="btn btn-danger btn-sm w-100"><i class="bi bi-stop-fill"></i> Tutup</button>
+                                @endif
+                            </div>
+                        </div>
+                        {{-- Sore --}}
+                        <div class="col-6">
+                            <div class="rounded-3 border border-2 p-3 text-center {{ $afternoonActive ? 'border-primary bg-primary bg-opacity-10' : 'border-secondary-subtle bg-light' }}">
+                                <span class="fs-2"><i class="bi bi-sunset-fill"></i></span>
+                                <p class="small fw-semibold mb-0 mt-0">Sesi Sore</p>
+                                <p class="mb-2 {{ $afternoonActive ? 'text-primary fw-semibold' : 'text-muted' }}" style="font-size:0.7rem;">
+                                    {{ $afternoonActive ? '● AKTIF' : '○ NONAKTIF' }}
+                                </p>
+                                @if(!$afternoonActive)
+                                    <button onclick="controlSession('afternoon', 'start')" class="btn btn-success btn-sm w-100"><i class="bi bi-play-fill"></i> Mulai</button>
+                                @else
+                                    <button onclick="controlSession('afternoon', 'stop')" class="btn btn-danger btn-sm w-100"><i class="bi bi-stop-fill"></i> Tutup</button>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {{-- Quick Actions --}}
+            <div class="card border-0 shadow-sm">
                 <div class="card-body d-flex flex-column gap-2">
                     <h2 class="h6 fw-semibold">Aksi Cepat</h2>
                     <a href="{{ route('walikelas.rekap') }}" class="btn btn-primary d-flex align-items-center justify-content-center gap-2">
@@ -68,4 +108,38 @@
             </div>
         </div>
     </div>
+
+    <script>
+        async function controlSession(session, action) {
+            const url = action === 'start'
+                ? '{{ route("walikelas.session.start") }}'
+                : '{{ route("walikelas.session.stop") }}';
+
+            const label = session === 'morning' ? 'Pagi' : 'Sore';
+
+            if (action === 'stop') {
+                if (!confirm(`Tutup Sesi ${label}?\n\nSiswa yang belum absen akan otomatis di-mark ALFA (tidak hadir).`)) {
+                    return;
+                }
+            }
+
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                        'Accept': 'application/json',
+                    },
+                    body: JSON.stringify({ session }),
+                });
+
+                const data = await response.json();
+                alert(data.message);
+                window.location.reload();
+            } catch (error) {
+                alert('Gagal: ' + error.message);
+            }
+        }
+    </script>
 </x-layouts.app>
