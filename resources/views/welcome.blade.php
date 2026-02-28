@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ config('app.name', 'Absensi Sekolah') }}</title>
+    <title>{{ config('app.name', 'HadirIN') }}</title>
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=inter:400,500,600,700,800" rel="stylesheet" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -54,7 +54,7 @@
     <nav class="navbar navbar-expand-lg border-bottom shadow-sm sticky-top">
         <div class="container">
             <a class="navbar-brand d-flex align-items-center gap-2 fw-bold" href="/">
-                <div class="d-flex align-items-center justify-content-center rounded-3 text-white" style="width:36px;height:36px;background:#1e3a5f;font-size:0.8rem;font-weight:700;">AB</div>
+                <img src="{{ asset('images/logo.png') }}" alt="HadirIN" style="height:52px;">
                 <span class="text-dark">HadirIN</span>
             </a>
             <div class="d-flex align-items-center gap-2">
@@ -82,7 +82,7 @@
                     </p>
                     <div class="d-flex flex-wrap gap-2">
                         <a href="{{ route('login') }}" class="btn btn-light btn-lg fw-semibold px-4">
-                            <i class="bi bi-box-arrow-in-right me-2"></i> Masuk Sekarang
+                            <i class="bi bi-box-arrow-in-right me-2"></i> Log In
                         </a>
                     </div>
                 </div>
@@ -168,7 +168,7 @@
     {{-- Footer --}}
     <footer class="py-4 border-top bg-white">
         <div class="container text-center">
-            <p class="text-muted small mb-0">&copy; {{ date('Y') }} Absensi Sekolah. Sistem Presensi Digital Berbasis QR Code.</p>
+            <p class="text-muted small mb-0">&copy; {{ date('Y') }} HadirIN. Sistem Presensi Digital Berbasis QR Code.</p>
         </div>
     </footer>
 

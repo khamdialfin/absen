@@ -88,6 +88,16 @@ Route::middleware(['auth', 'password.set'])->group(function () {
                 ->name('rekap');
             Route::get('/rekap/export', [RekapController::class, 'export'])
                 ->name('rekap.export');
+
+            // Manage Users (Admin)
+            Route::get('/users', [\App\Http\Controllers\ManageUsersController::class, 'index'])
+                ->name('users');
+            Route::delete('/users/{user}', [\App\Http\Controllers\ManageUsersController::class, 'destroy'])
+                ->name('users.destroy');
+            Route::patch('/users/{user}/kelas', [\App\Http\Controllers\ManageUsersController::class, 'updateKelas'])
+                ->name('users.update-kelas');
+            Route::post('/users', [\App\Http\Controllers\ManageUsersController::class, 'store'])
+                ->name('users.store');
         });
 
     // ── SEKERTARIS ───────────────────────────────────────────────

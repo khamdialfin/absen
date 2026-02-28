@@ -22,6 +22,7 @@ class AttendanceController extends Controller
      */
     public function generateQr(Request $request)
     {
+        /** @var \App\Models\User $user */
         $user = auth()->user();
 
         $schoolLat    = config('school.latitude');
@@ -61,7 +62,7 @@ class AttendanceController extends Controller
         // Generate short token dan simpan di cache (5 menit)
         $token = strtoupper(Str::random(8));
         Cache::put('qr_token:' . $token, [
-            'user_id'   => auth()->id(),
+            'user_id'   => /** @scrutinizer ignore-type */ auth()->id(),
             'timestamp' => now()->timestamp,
         ], now()->addMinutes(5));
 
@@ -87,7 +88,9 @@ class AttendanceController extends Controller
      */
     public function riwayat()
     {
-        $attendances = auth()->user()->attendances()
+        /** @var \App\Models\User $authUser */
+        $authUser = auth()->user();
+        $attendances = $authUser->attendances()
             ->orderByDesc('date')
             ->paginate(15);
 
@@ -105,19 +108,23 @@ class AttendanceController extends Controller
     {
         $now = now();
         $today = $now->toDateString();
+        /** @var \App\Models\User $authUser */
+        $authUser = auth()->user();
+        $kelas = $authUser->kelas;
 
         // Cek status sesi dari cache
         $morningActive   = Cache::get('session:morning:' . $today, false);
         $afternoonActive = Cache::get('session:afternoon:' . $today, false);
 
-        // Data siswa yang sudah scan hari ini
+        // Data siswa yang sudah scan hari ini (hanya kelas sendiri)
         $todayAttendances = Attendance::with('user')
             ->whereDate('date', $today)
+            ->whereHas('user', fn($q) => $q->where('kelas', $kelas))
             ->orderByDesc('created_at')
             ->get();
 
-        // Jumlah total siswa (untuk progress)
-        $totalSiswa = User::where('role', 'siswa')->count();
+        // Jumlah total siswa kelas ini (untuk progress)
+        $totalSiswa = User::where('role', 'siswa')->where('kelas', $kelas)->count();
 
         return view('sekertaris.scan', compact(
             'morningActive',
@@ -166,8 +173,12 @@ class AttendanceController extends Controller
         Cache::forget($sessionKey);
 
         if ($request->session === 'morning') {
-            // Ambil semua siswa yang BELUM absen hari ini
+            // Ambil siswa kelas ini yang BELUM absen hari ini
+            /** @var \App\Models\User $authUser */
+            $authUser = auth()->user();
+            $kelas = $authUser->kelas;
             $absentStudents = User::where('role', 'siswa')
+                ->where('kelas', $kelas)
                 ->whereDoesntHave('attendances', function ($q) use ($today) {
                     $q->whereDate('date', $today);
                 })
@@ -240,6 +251,16 @@ class AttendanceController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => $user->name . ' bukan siswa (role: ' . $user->role . ').',
+            ], 422);
+        }
+
+        // Validasi kelas: siswa harus dari kelas yang sama dengan sekretaris
+        /** @var \App\Models\User $sekretaris */
+        $sekretaris = auth()->user();
+        if ($sekretaris->kelas && $user->kelas !== $sekretaris->kelas) {
+            return response()->json([
+                'success' => false,
+                'message' => $user->name . ' bukan siswa kelas ' . $sekretaris->kelas . ' (kelas: ' . ($user->kelas ?? 'belum diset') . ').',
             ], 422);
         }
 
@@ -325,7 +346,11 @@ class AttendanceController extends Controller
      */
     public function manualForm()
     {
+        /** @var \App\Models\User $authUser */
+        $authUser = auth()->user();
+        $kelas = $authUser->kelas;
         $students = User::where('role', 'siswa')
+            ->where('kelas', $kelas)
             ->orderBy('name')
             ->get();
 
@@ -466,7 +491,10 @@ class AttendanceController extends Controller
      */
     public function recap(Request $request)
     {
-        $query = Attendance::with('user')->orderBy('date', 'desc')->orderBy('created_at', 'desc');
+        $kelas = auth()->user()->kelas;
+        $query = Attendance::with('user')
+            ->whereHas('user', fn($q) => $q->where('kelas', $kelas))
+            ->orderBy('date', 'desc')->orderBy('created_at', 'desc');
         $this->applyFilter($query, $request);
         $attendances = $query->get();
 
@@ -488,7 +516,10 @@ class AttendanceController extends Controller
      */
     public function exportRecap(Request $request)
     {
-        $query = Attendance::with('user')->orderBy('date', 'desc')->orderBy('created_at', 'desc');
+        $kelas = auth()->user()->kelas;
+        $query = Attendance::with('user')
+            ->whereHas('user', fn($q) => $q->where('kelas', $kelas))
+            ->orderBy('date', 'desc')->orderBy('created_at', 'desc');
         $this->applyFilter($query, $request);
         $attendances = $query->get();
 
@@ -528,7 +559,10 @@ class AttendanceController extends Controller
      */
     public function recapMasuk(Request $request)
     {
-        $query = Attendance::with('user')->whereNotNull('time_in')->orderBy('date', 'asc')->orderBy('time_in', 'asc');
+        $kelas = auth()->user()->kelas;
+        $query = Attendance::with('user')
+            ->whereHas('user', fn($q) => $q->where('kelas', $kelas))
+            ->whereNotNull('time_in')->orderBy('date', 'asc')->orderBy('time_in', 'asc');
         $this->applyFilter($query, $request);
         $attendances = $query->get();
         
@@ -541,7 +575,10 @@ class AttendanceController extends Controller
      */
     public function recapPulang(Request $request)
     {
-        $query = Attendance::with('user')->whereNotNull('time_out')->orderBy('date', 'asc')->orderBy('time_out', 'asc');
+        $kelas = auth()->user()->kelas;
+        $query = Attendance::with('user')
+            ->whereHas('user', fn($q) => $q->where('kelas', $kelas))
+            ->whereNotNull('time_out')->orderBy('date', 'asc')->orderBy('time_out', 'asc');
         $this->applyFilter($query, $request);
         $attendances = $query->get();
 
@@ -554,8 +591,10 @@ class AttendanceController extends Controller
      */
     public function reportCombined(Request $request)
     {
+        $kelas = auth()->user()->kelas;
         $query = Attendance::join('users', 'attendances.user_id', '=', 'users.id')
             ->select('attendances.*')
+            ->where('users.kelas', $kelas)
             ->with('user')
             ->orderBy('attendances.date', 'asc')
             ->orderBy('users.name', 'asc');

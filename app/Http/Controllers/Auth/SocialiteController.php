@@ -37,6 +37,14 @@ class SocialiteController extends Controller
                 ->with('error', 'Gagal login dengan Google. Silakan coba lagi.');
         }
 
+        // Validasi domain email — hanya @belajar.id yang diizinkan
+        $email = $googleUser->getEmail();
+        $allowedDomain = 'gmail.com';
+        if (!str_ends_with($email, '@' . $allowedDomain)) {
+            return redirect()->route('login')
+                ->with('error', 'Hanya email sekolah (@' . $allowedDomain . ') yang bisa digunakan untuk login.');
+        }
+
         // Cari user berdasarkan google_id atau email
         $user = User::where('google_id', $googleUser->getId())
             ->orWhere('email', $googleUser->getEmail())

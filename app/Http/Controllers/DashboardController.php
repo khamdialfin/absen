@@ -29,20 +29,23 @@ class DashboardController extends Controller
     private function walkelasData(): array
     {
         $today = now()->toDateString();
-        $totalSiswa = \App\Models\User::where('role', 'siswa')->count();
+        $kelas = auth()->user()->kelas;
+        $totalSiswa = \App\Models\User::where('role', 'siswa')->where('kelas', $kelas)->count();
         
-        // Ambil statistik hari ini
+        // Ambil statistik hari ini (hanya kelas sendiri)
+        $kelasFilter = fn($q) => $q->whereHas('user', fn($u) => $u->where('kelas', $kelas));
         $stats = [
-            'hadir'     => \App\Models\Attendance::where('date', $today)->where('status', 'hadir')->count(),
-            'terlambat' => \App\Models\Attendance::where('date', $today)->where('status', 'terlambat')->count(),
-            'izin'      => \App\Models\Attendance::where('date', $today)->where('status', 'izin')->count(),
-            'sakit'     => \App\Models\Attendance::where('date', $today)->where('status', 'sakit')->count(),
-            'alfa'      => \App\Models\Attendance::where('date', $today)->where('status', 'alfa')->count(),
+            'hadir'     => \App\Models\Attendance::where('date', $today)->where('status', 'hadir')->whereHas('user', fn($q) => $q->where('kelas', $kelas))->count(),
+            'terlambat' => \App\Models\Attendance::where('date', $today)->where('status', 'terlambat')->whereHas('user', fn($q) => $q->where('kelas', $kelas))->count(),
+            'izin'      => \App\Models\Attendance::where('date', $today)->where('status', 'izin')->whereHas('user', fn($q) => $q->where('kelas', $kelas))->count(),
+            'sakit'     => \App\Models\Attendance::where('date', $today)->where('status', 'sakit')->whereHas('user', fn($q) => $q->where('kelas', $kelas))->count(),
+            'alfa'      => \App\Models\Attendance::where('date', $today)->where('status', 'alfa')->whereHas('user', fn($q) => $q->where('kelas', $kelas))->count(),
         ];
         
-        // Aktivitas terbaru (5 record terakhir hari ini)
+        // Aktivitas terbaru (5 record terakhir hari ini, kelas sendiri)
         $recentActivities = \App\Models\Attendance::with('user')
             ->where('date', $today)
+            ->whereHas('user', fn($q) => $q->where('kelas', $kelas))
             ->orderBy('created_at', 'desc')
             ->limit(5)
             ->get();
@@ -58,6 +61,7 @@ class DashboardController extends Controller
         $now = now();
         $today = $now->toDateString();
         $currentTime = $now->format('H:i');
+        $kelas = auth()->user()->kelas;
 
         // Tentukan sesi aktif
         $morningStart = config('school.session.morning.start');
@@ -68,19 +72,20 @@ class DashboardController extends Controller
         $isMorningSession = $currentTime >= $morningStart && $currentTime <= $morningEnd;
         $isAfternoonSession = $currentTime >= $afternoonStart && $currentTime <= $afternoonEnd;
 
-        // Statistik
-        $totalSiswa = \App\Models\User::where('role', 'siswa')->count();
+        // Statistik (hanya kelas sendiri)
+        $totalSiswa = \App\Models\User::where('role', 'siswa')->where('kelas', $kelas)->count();
         $stats = [
-            'hadir'     => \App\Models\Attendance::where('date', $today)->where('status', 'hadir')->count(),
-            'terlambat' => \App\Models\Attendance::where('date', $today)->where('status', 'terlambat')->count(),
-            'izin'      => \App\Models\Attendance::where('date', $today)->where('status', 'izin')->count(),
-            'sakit'     => \App\Models\Attendance::where('date', $today)->where('status', 'sakit')->count(),
-            'alfa'      => \App\Models\Attendance::where('date', $today)->where('status', 'alfa')->count(),
+            'hadir'     => \App\Models\Attendance::where('date', $today)->where('status', 'hadir')->whereHas('user', fn($q) => $q->where('kelas', $kelas))->count(),
+            'terlambat' => \App\Models\Attendance::where('date', $today)->where('status', 'terlambat')->whereHas('user', fn($q) => $q->where('kelas', $kelas))->count(),
+            'izin'      => \App\Models\Attendance::where('date', $today)->where('status', 'izin')->whereHas('user', fn($q) => $q->where('kelas', $kelas))->count(),
+            'sakit'     => \App\Models\Attendance::where('date', $today)->where('status', 'sakit')->whereHas('user', fn($q) => $q->where('kelas', $kelas))->count(),
+            'alfa'      => \App\Models\Attendance::where('date', $today)->where('status', 'alfa')->whereHas('user', fn($q) => $q->where('kelas', $kelas))->count(),
         ];
         
-        // Aktivitas terbaru
+        // Aktivitas terbaru (kelas sendiri)
         $recentActivities = \App\Models\Attendance::with('user')
             ->where('date', $today)
+            ->whereHas('user', fn($q) => $q->where('kelas', $kelas))
             ->orderBy('created_at', 'desc')
             ->limit(5)
             ->get();

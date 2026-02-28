@@ -129,8 +129,11 @@
 
             @if(auth()->user()->isWalikelas())
                 <div class="mt-3 mb-2"><p class="nav-section-label mb-0">Wali Kelas</p></div>
-                <a href="{{ route('walikelas.rekap') }}" class="nav-link-sidebar {{ request()->routeIs('walikelas.*') ? 'active' : '' }}">
+                <a href="{{ route('walikelas.rekap') }}" class="nav-link-sidebar {{ request()->routeIs('walikelas.rekap') ? 'active' : '' }}">
                     <i class="bi bi-file-earmark-text fs-6"></i> Rekap Kehadiran
+                </a>
+                <a href="{{ route('walikelas.users') }}" class="nav-link-sidebar {{ request()->routeIs('walikelas.users') ? 'active' : '' }}">
+                    <i class="bi bi-people-fill fs-6"></i> Kelola Akun
                 </a>
             @endif
 
