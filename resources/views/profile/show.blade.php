@@ -99,177 +99,109 @@
                     </form>
                 </div>
             </div>
-        </div>
-    </div>
 
-                {{-- Data Orang Tua Section (Only for Students) --}}
+             {{-- Data Orang Tua Section (Only for Students) --}}
                 @if($user->isSiswa())
-                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-                    <div class="p-6 border-b border-gray-100">
-                        <div class="flex items-center justify-between">
-                            <div>
-                                <h3 class="text-lg font-bold text-gray-900">Data Orang Tua / Wali</h3>
-                                <p class="text-sm text-gray-500">Informasi kontak orang tua untuk notifikasi presensi.</p>
+                <div class="card shadow-sm border-0 mt-4">
+                    {{-- Header --}}
+                    <div class="card-header bg-white border-bottom">
+                        <div class="d-flex justify-content-between align-items-start">
+                             <div class="card-header bg-transparent border-bottom">
+                                <h3 class="h6 fw-bold mb-0"> Data Orang Tua / Wali</h3>
+                                <p class="text-muted mb-0" style="font-size:0.75rem;"> Informasi kontak orang tua untuk notifikasi presensi</p>
                             </div>
-                            @if($parentProfile)
-                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                                    <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
-                                    </svg>
-                                    Terisi
-                                </span>
-                            @else
-                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
-                                    <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
-                                    </svg>
-                                    Belum Diisi
-                                </span>
-                            @endif
+                            <span class="badge {{ $parentProfile ? 'bg-success' : 'bg-warning text-dark' }}
+                                d-inline-flex align-items-center gap-1">
+                                <i class="bi {{ $parentProfile ? 'bi-check-circle-fill' : 'bi-exclamation-triangle-fill' }}"></i>
+                                {{ $parentProfile ? 'Terisi' : 'Belum Diisi' }}
+                            </span>
                         </div>
                     </div>
-                    <div class="p-6">
-                        <form action="{{ route('profile.parent.update') }}" method="POST" class="space-y-5">
+
+                    {{-- Body --}}
+                    <div class="card-body">
+                        <form action="{{ route('profile.parent.update') }}" method="POST" novalidate>
                             @csrf
                             @method('PUT')
 
-                            <div>
-                                <label for="parent_name" class="block text-sm font-medium text-gray-700 mb-1">
-                                    Nama Orang Tua / Wali <span class="text-red-500">*</span>
+                            {{-- Nama --}}
+                            <div class="mb-3">
+                                <label for="parent_name" class="form-label small fw-semibold">
+                                    Nama Orang Tua / Wali <span class="text-danger">*</span>
                                 </label>
-                                <input type="text" 
-                                       name="parent_name" 
-                                       id="parent_name" 
-                                       value="{{ old('parent_name', $parentProfile->name ?? '') }}"
-                                       required
-                                       class="w-full rounded-lg border-gray-300 focus:border-primary-500 focus:ring-primary-500 shadow-sm transition-colors @error('parent_name') border-red-500 @enderror"
-                                       placeholder="Contoh: Budi Santoso">
+                                <input type="text"
+                                    id="parent_name"
+                                    name="parent_name"
+                                    value="{{ old('parent_name', $parentProfile->name ?? '') }}"
+                                    class="form-control @error('parent_name') is-invalid @enderror"
+                                    required>
                                 @error('parent_name')
-                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                    <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
 
-                            <div>
-                                <label for="parent_phone" class="block text-sm font-medium text-gray-700 mb-1">
-                                    Nomor WhatsApp <span class="text-red-500">*</span>
+                            {{-- WhatsApp --}}
+                            <div class="mb-3">
+                                <label for="parent_phone" class="form-label small fw-semibold">
+                                    Nomor WhatsApp <span class="text-danger">*</span>
                                 </label>
-                                <div class="flex rounded-lg border border-gray-300 overflow-hidden focus-within:ring-2 focus-within:ring-primary-500 focus-within:border-primary-500">
-                                    <span class="inline-flex items-center px-3 bg-gray-50 text-gray-500 text-sm border-r border-gray-300">
-                                        +62
-                                    </span>
-                                    <input type="text" 
-                                           name="parent_phone" 
-                                           id="parent_phone" 
-                                           value="{{ old('parent_phone', $parentProfile->phone ?? '') }}"
-                                           required
-                                           class="flex-1 px-4 py-2.5 text-sm focus:outline-none"
-                                           placeholder="81234567890"
-                                           oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                                <div class="input-group">
+                                    <span class="input-group-text">+62</span>
+                                    <input type="text"
+                                        id="parent_phone"
+                                        name="parent_phone"
+                                        value="{{ old('parent_phone', $parentProfile->phone ?? '') }}"
+                                        class="form-control @error('parent_phone') is-invalid @enderror"
+                                        placeholder="81234567890"
+                                        inputmode="numeric"
+                                        required>
                                 </div>
-                                <p class="mt-1 text-xs text-gray-500">
-                                    Contoh: 81234567890 (cukup masukkan angka, tanpa 0 di depan)
-                                </p>
+                                <small class="text-muted">
+                                    Masukkan angka saja, tanpa 0 di depan
+                                </small>
                                 @error('parent_phone')
-                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                    <div class="invalid-feedback d-block">{{ $message }}</div>
                                 @enderror
                             </div>
 
-                            <div>
-                                <label for="parent_address" class="block text-sm font-medium text-gray-700 mb-1">
-                                    Alamat Lengkap <span class="text-red-500">*</span>
+                            {{-- Alamat --}}
+                            <div class="mb-4">
+                                <label for="parent_address" class="form-label small fw-semibold">
+                                    Alamat Lengkap <span class="text-danger">*</span>
                                 </label>
-                                <textarea name="parent_address" 
-                                          id="parent_address" 
-                                          rows="3"
-                                          required
-                                          class="w-full rounded-lg border-gray-300 focus:border-primary-500 focus:ring-primary-500 shadow-sm transition-colors @error('parent_address') border-red-500 @enderror"
-                                          placeholder="Contoh: Jl. Merdeka No. 123, RT 01 RW 02, Kel. Sukajadi, Kec. Sukasari, Kota Bandung">{{ old('parent_address', $parentProfile->address ?? '') }}</textarea>
+                                <textarea id="parent_address"
+                                        name="parent_address"
+                                        rows="3"
+                                        class="form-control @error('parent_address') is-invalid @enderror"
+                                        required>{{ old('parent_address', $parentProfile->address ?? '') }}</textarea>
                                 @error('parent_address')
-                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                    <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
 
-                            <div class="flex justify-end pt-2">
-                                <button type="submit" class="inline-flex items-center px-4 py-2 bg-primary-600 border border-transparent rounded-lg font-semibold text-xs text-white uppercase tracking-widest hover:bg-primary-700 focus:bg-primary-700 active:bg-primary-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
+                            {{-- Action --}}
+                            <div class="text-end">
+                                <button type="submit" class="btn btn-primary btn-sm fw-semibold">
                                     {{ $parentProfile ? 'Update Data Orang Tua' : 'Simpan Data Orang Tua' }}
                                 </button>
                             </div>
                         </form>
 
-                        @if(!$parentProfile)
-                            <div class="mt-4 p-3 bg-yellow-50 rounded-lg border border-yellow-200">
-                                <div class="flex">
-                                    <svg class="h-5 w-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
-                                    </svg>
-                                    <div class="ml-3">
-                                        <p class="text-sm text-yellow-700">
-                                            Data orang tua diperlukan untuk mengirim notifikasi WhatsApp saat Anda melakukan presensi.
-                                        </p>
-                                    </div>
+                        {{-- Warning --}}
+                        @unless($parentProfile)
+                            <div class="alert alert-warning mt-4 d-flex gap-2 align-items-start">
+                                <i class="bi bi-exclamation-triangle-fill"></i>
+                                <div class="small">
+                                    Data orang tua wajib diisi untuk menerima notifikasi WhatsApp presensi.
                                 </div>
                             </div>
-                        @endif
+                        @endunless
                     </div>
                 </div>
-                @endif
-
-                {{-- Change Password Form --}}
-                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-                    <div class="p-6 border-b border-gray-100">
-                        <h3 class="text-lg font-bold text-gray-900">Ganti Password</h3>
-                        <p class="text-sm text-gray-500">Pastikan akun Anda tetap aman dengan password yang kuat.</p>
-                    </div>
-                    <div class="p-6">
-                        <form action="{{ route('profile.password') }}" method="POST" class="space-y-5">
-                            @csrf
-                            @method('PUT')
-
-                            @if(! $user->password && $user->google_id)
-                                <div class="bg-blue-50 text-blue-800 p-4 rounded-lg text-sm mb-4">
-                                    Anda login menggunakan Google. Anda dapat membuat password di sini untuk login manual.
-                                    Field "Password Saat Ini" boleh dikosongkan.
-                                </div>
-                            @endif
-
-                            @if($user->password)
-                                <div>
-                                    <label for="current_password" class="block text-sm font-medium text-gray-700 mb-1">Password Saat Ini</label>
-                                    <input type="password" name="current_password" id="current_password" required
-                                        class="w-full rounded-lg border-gray-300 focus:border-primary-500 focus:ring-primary-500 shadow-sm transition-colors @error('current_password') border-red-500 @enderror">
-                                    @error('current_password')
-                                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                                    @enderror
-                                </div>
-                            @endif
-
-                            <div>
-                                <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Password Baru</label>
-                                <input type="password" name="password" id="password" required autocomplete="new-password"
-                                    class="w-full rounded-lg border-gray-300 focus:border-primary-500 focus:ring-primary-500 shadow-sm transition-colors @error('password') border-red-500 @enderror">
-                                @error('password')
-                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                                @enderror
-                            </div>
-
-                            <div>
-                                <label for="password_confirmation" class="block text-sm font-medium text-gray-700 mb-1">Konfirmasi Password</label>
-                                <input type="password" name="password_confirmation" id="password_confirmation" required autocomplete="new-password"
-                                    class="w-full rounded-lg border-gray-300 focus:border-primary-500 focus:ring-primary-500 shadow-sm transition-colors">
-                            </div>
-
-                            <div class="flex justify-end pt-2">
-                                <button type="submit" class="inline-flex items-center px-4 py-2 bg-gray-800 border border-transparent rounded-lg font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
-                                    Update Password
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
+                @endif  
         </div>
-    </div>
-
+    </div>  
+    
     {{-- JavaScript untuk membersihkan nomor telepon --}}
     <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -288,3 +220,4 @@
         });
     </script>
 </x-layouts.app>
+
