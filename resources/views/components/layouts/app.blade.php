@@ -165,18 +165,12 @@
             @endif
 
             @if(auth()->user()->isBendahara())
-                <div class="pt-4 pb-2">
-                    <p class="px-3 text-xs font-semibold text-gray-400 uppercase tracking-wider">Bendahara</p>
-                </div>
+                <div class="mt-3 mb-2"><p class="nav-section-label mb-0">Bendahara</p></div>
                <a href="{{ route('bendahara.dashboard') }}" class="nav-link-sidebar {{ request()->routeIs('bendahara.dashboard') ? 'active' : '' }}">
                     <i class="bi bi-file-earmark-text fs-6"></i> Dashboard
                 </a>
-                <a href="{{ route('bendahara.pemasukan') }}"
-                   class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium {{ request()->routeIs('bendahara.pemasukan') ? 'bg-green-50 text-green-700' : 'text-gray-700 hover:bg-gray-100' }}">
-                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-                    </svg>
-                    Pemasukan
+                               <a href="{{ route('bendahara.pemasukan') }}" class="nav-link-sidebar {{ request()->routeIs('bendahara.pemasukan') ? 'active' : '' }}">
+                    <i class="bi bi-file-earmark-text fs-6"></i> Pemasukan
                 </a>
                 <a href="{{ route('bendahara.pengeluaran') }}" class="nav-link-sidebar {{ request()->routeIs('bendahara.pengeluaran') ? 'active' : '' }}" style="{{ request()->routeIs('bendahara.pengeluaran') ? 'background:#fef2f2;color:#b91c1c;' : '' }}">
                     <i class="bi bi-dash-circle fs-6"></i> Pengeluaran
@@ -316,5 +310,5 @@
 </body>
 </html>
 <p>testt
-    
+
 </p>
