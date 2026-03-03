@@ -22,6 +22,11 @@
                                 <p class="mb-0 {{ $morningActive ? 'text-success fw-semibold' : 'text-muted' }}" style="font-size:0.7rem;">
                                     {{ $morningActive ? '● AKTIF' : '○ NONAKTIF' }}
                                 </p>
+                                @if($schedule)
+                                <p class="mb-0 text-muted" style="font-size:0.65rem;">
+                                    {{ \Carbon\Carbon::parse($schedule->morning_start)->format('H:i') }} - {{ \Carbon\Carbon::parse($schedule->morning_end)->format('H:i') }}
+                                </p>
+                                @endif
                             </div>
                         </div>
                         <div class="col-6">
@@ -31,6 +36,11 @@
                                 <p class="mb-0 {{ $afternoonActive ? 'text-primary fw-semibold' : 'text-muted' }}" style="font-size:0.7rem;">
                                     {{ $afternoonActive ? '● AKTIF' : '○ NONAKTIF' }}
                                 </p>
+                                @if($schedule)
+                                <p class="mb-0 text-muted" style="font-size:0.65rem;">
+                                    {{ \Carbon\Carbon::parse($schedule->afternoon_start)->format('H:i') }} - {{ \Carbon\Carbon::parse($schedule->afternoon_end)->format('H:i') }}
+                                </p>
+                                @endif
                             </div>
                         </div>
                     </div>
@@ -41,7 +51,12 @@
                     </div>
                     @if(!$morningActive && !$afternoonActive)
                         <div class="alert alert-warning small py-2 mt-3 mb-0">
-                            <i class="bi bi-exclamation-triangle me-1"></i> Belum ada sesi aktif. Hubungi Walikelas untuk membuka sesi absensi.
+                            <i class="bi bi-exclamation-triangle me-1"></i>
+                            @if($schedule)
+                                Saat ini di luar jadwal presensi. Scanner akan otomatis aktif sesuai jadwal.
+                            @else
+                                Jadwal belum diatur oleh Walikelas. Hubungi Walikelas untuk mengatur jadwal presensi.
+                            @endif
                         </div>
                     @endif
                 </div>

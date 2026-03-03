@@ -134,6 +134,9 @@
                 <a href="{{ route('walikelas.rekap') }}" class="nav-link-sidebar {{ request()->routeIs('walikelas.rekap') ? 'active' : '' }}">
                     <i class="bi bi-file-earmark-text fs-6"></i> Rekap Kehadiran
                 </a>
+                <a href="{{ route('walikelas.schedule') }}" class="nav-link-sidebar {{ request()->routeIs('walikelas.schedule') ? 'active' : '' }}">
+                    <i class="bi bi-clock fs-6"></i> Jadwal Presensi
+                </a>
                 <a href="{{ route('walikelas.users') }}" class="nav-link-sidebar {{ request()->routeIs('walikelas.users') ? 'active' : '' }}">
                     <i class="bi bi-people-fill fs-6"></i> Kelola Akun
                 </a>
@@ -309,6 +312,3 @@
     </script>
 </body>
 </html>
-<p>testt
-
-</p>
