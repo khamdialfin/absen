@@ -27,7 +27,7 @@
          <div style="width:32px;height:2px;background:rgba(255,255,255,0.5);"></div>
           <div class="d-flex align-items-center gap-1">
             <div class="rounded-circle d-flex align-items-center justify-content-center fw-bold small" style="width:32px;height:32px;background:rgba(255,255,255,0.2);color:rgba(255,255,255,0.5);">3</div>
-            <span class="small" style="color:rgba(255,255,255,0.5);">Profil Parent</span>
+            <span class="small" style="color:rgba(255,255,255,0.5);">Profil Orang Tua</span>
         </div>
     </div>
 
@@ -79,13 +79,13 @@
                 <div class="mb-3">
                     <label class="form-label small fw-medium">Jenis Kelamin</label>
                     <div class="d-flex gap-3">
-                        <div class="form-check border rounded-3 px-4 py-2 flex-fill">
+                        <div class="form-check border rounded-3 ps-5 pe-2 py-2 flex-fill">
                             <input type="radio" name="gender" value="L" {{ old('gender', $user->gender) == 'L' ? 'checked' : '' }} class="form-check-input" id="gender-l" required>
-                            <label class="form-check-label small" for="gender-l">👦 Laki-laki</label>
+                            <label class="form-check-label small" for="gender-l"> Laki-laki</label>
                         </div>
-                        <div class="form-check border rounded-3 px-4 py-2 flex-fill">
+                        <div class="form-check border rounded-3 ps-5 pe-4 py-2 flex-fill">
                             <input type="radio" name="gender" value="P" {{ old('gender', $user->gender) == 'P' ? 'checked' : '' }} class="form-check-input" id="gender-p">
-                            <label class="form-check-label small" for="gender-p">👧 Perempuan</label>
+                            <label class="form-check-label small" for="gender-p"> Perempuan</label>
                         </div>
                     </div>
                 </div>

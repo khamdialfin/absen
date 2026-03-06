@@ -21,7 +21,7 @@
          <div style="width:32px;height:2px;background:rgba(255,255,255,0.3);"></div>
         <div class="d-flex align-items-center gap-1">
             <div class="rounded-circle d-flex align-items-center justify-content-center fw-bold small" style="width:32px;height:32px;background:rgba(255,255,255,0.2);color:rgba(255,255,255,0.5);">3</div>
-            <span class="small" style="color:rgba(255,255,255,0.5);">Profil Parent</span>
+            <span class="small" style="color:rgba(255,255,255,0.5);">Profil Orang Tua</span>
         </div>
     </div>
 

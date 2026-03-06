@@ -360,33 +360,41 @@ class AttendanceController extends Controller
      */
     private function sendParentNotification(User $student, string $type, string $time, ?string $status = null, ?string $timeIn = null): void
     {
+        \Illuminate\Support\Facades\Log::info("WA Notif: called for {$student->name} (ID:{$student->id}), type={$type}");
+
         if (!config('services.fonnte.enabled')) {
+            \Illuminate\Support\Facades\Log::info("WA Notif: SKIPPED - fonnte not enabled");
             return;
         }
 
         try {
             $parentProfile = $student->parentProfile;
             if (!$parentProfile || empty($parentProfile->phone)) {
+                \Illuminate\Support\Facades\Log::info("WA Notif: SKIPPED - no parent profile/phone for {$student->name}");
                 return;
             }
+
+            \Illuminate\Support\Facades\Log::info("WA Notif: sending to {$parentProfile->phone} for {$student->name}");
 
             $fonnte = new FonnteService();
 
             if ($type === 'checkin') {
-                $fonnte->sendCheckInNotification(
+                $result = $fonnte->sendCheckInNotification(
                     $parentProfile->phone,
                     $student->name,
                     $time,
                     $status ?? 'hadir'
                 );
             } else {
-                $fonnte->sendCheckOutNotification(
+                $result = $fonnte->sendCheckOutNotification(
                     $parentProfile->phone,
                     $student->name,
                     $timeIn ?? '-',
                     $time
                 );
             }
+
+            \Illuminate\Support\Facades\Log::info("WA Notif: result=" . ($result ? 'SUCCESS' : 'FAILED'));
         } catch (\Exception $e) {
             \Illuminate\Support\Facades\Log::error('WA Notification error: ' . $e->getMessage());
         }

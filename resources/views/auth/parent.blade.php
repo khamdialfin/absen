@@ -46,7 +46,7 @@
                  style="width:32px;height:32px;">
                 3
             </div>
-            <span class="text-white small fw-medium">Profil Parent</span>
+            <span class="text-white small fw-medium">Profil Orang Tua</span>
         </div>
     </div>
 
