@@ -50,11 +50,12 @@ class DashboardController extends Controller
             ->limit(5)
             ->get();
 
-        // Status sesi absensi
-        $morningActive   = \Illuminate\Support\Facades\Cache::get('session:morning:' . $today, false);
-        $afternoonActive = \Illuminate\Support\Facades\Cache::get('session:afternoon:' . $today, false);
+        // Status sesi absensi dari schedule
+        $schedule = \App\Models\AttendanceSchedule::where('kelas', $kelas)->first();
+        $morningActive   = $schedule ? $schedule->isMorningActive() : false;
+        $afternoonActive = $schedule ? $schedule->isAfternoonActive() : false;
 
-        return compact('totalSiswa', 'stats', 'recentActivities', 'morningActive', 'afternoonActive');
+        return compact('totalSiswa', 'stats', 'recentActivities', 'morningActive', 'afternoonActive', 'schedule');
     }
 
     /**
@@ -67,14 +68,12 @@ class DashboardController extends Controller
         $currentTime = $now->format('H:i');
         $kelas = auth()->user()->kelas;
 
-        // Tentukan sesi aktif
-        $morningStart = config('school.session.morning.start');
-        $morningEnd   = config('school.session.morning.end');
-        $afternoonStart = config('school.session.afternoon.start');
-        $afternoonEnd   = config('school.session.afternoon.end');
+        // Ambil schedule untuk kelas ini
+        $schedule = \App\Models\AttendanceSchedule::where('kelas', $kelas)->first();
 
-        $isMorningSession = $currentTime >= $morningStart && $currentTime <= $morningEnd;
-        $isAfternoonSession = $currentTime >= $afternoonStart && $currentTime <= $afternoonEnd;
+        // Tentukan sesi aktif dari schedule
+        $isMorningSession = $schedule ? $schedule->isMorningActive() : false;
+        $isAfternoonSession = $schedule ? $schedule->isAfternoonActive() : false;
 
         // Statistik (hanya kelas sendiri)
         $totalSiswa = \App\Models\User::where('role', 'siswa')->where('kelas', $kelas)->count();
@@ -94,7 +93,7 @@ class DashboardController extends Controller
             ->limit(5)
             ->get();
 
-        return compact('isMorningSession', 'isAfternoonSession', 'currentTime', 'totalSiswa', 'stats', 'recentActivities');
+        return compact('isMorningSession', 'isAfternoonSession', 'currentTime', 'totalSiswa', 'stats', 'recentActivities', 'schedule');
     }
 
     /**

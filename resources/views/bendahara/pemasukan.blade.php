@@ -1,18 +1,10 @@
 <x-layouts.app title="Pemasukan Kas">
-    <div x-data="{ modalOpen: false }" class="space-y-6">
-        
-        {{-- Header --}}
-        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <div>
-                <h1 class="text-2xl font-bold text-gray-900">Pemasukan Kas</h1>
-                <p class="text-sm text-gray-500 mt-1">Catat semua uang masuk (Debet)</p>
-            </div>
-            <button @click="modalOpen = true" 
-                    class="inline-flex items-center justify-center rounded-xl bg-green-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2">
-                 Catat Pemasukan
-            </button>
+    <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start gap-3 mb-4">
+        <div>
+            <h1 class="h4 fw-bold mb-1">Pemasukan Kas</h1>
+            <p class="text-muted small mb-0">Catat semua uang masuk (Debet)</p>
         </div>
-        <button type="button" class="btn btn-success fw-semibold" data-bs-toggle="modal" data-bs-target="#modalPemasukan"><i class="bi bi-plus-circle"></i> Catat Pemasukan</button>
+        <button type="button" class="btn btn-success fw-semibold" data-bs-toggle="modal" data-bs-target="#modalPemasukan"><i class="bi bi-plus-circle me-1"></i>Catat Pemasukan</button>
     </div>
 
     {{-- Table --}}

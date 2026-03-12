@@ -53,44 +53,56 @@
             </div>
         </div>
 
-        {{-- Session Control & Quick Actions --}}
+        {{-- Session Status & Quick Actions --}}
         <div class="col-lg-4">
-            {{-- Kontrol Sesi Absensi --}}
+            {{-- Status Sesi Otomatis --}}
             <div class="card border-0 shadow-sm mb-3">
                 <div class="card-body">
-                    <h2 class="small fw-semibold text-muted mb-3"><i class="bi bi-clock-history me-1"></i>Kontrol Sesi Absensi</h2>
-                    <div class="row g-3">
-                        {{-- Pagi --}}
-                        <div class="col-6">
-                            <div class="rounded-3 border border-2 p-3 text-center {{ $morningActive ? 'border-success bg-success bg-opacity-10' : 'border-secondary-subtle bg-light' }}">
-                                <span class="fs-2"><i class="bi bi-sunrise-fill"></i></span>
-                                <p class="small fw-semibold mb-0 mt-0">Sesi Pagi</p>
-                                <p class="mb-2 {{ $morningActive ? 'text-success fw-semibold' : 'text-muted' }}" style="font-size:0.7rem;">
-                                    {{ $morningActive ? '● AKTIF' : '○ NONAKTIF' }}
-                                </p>
-                                @if(!$morningActive)
-                                    <button onclick="controlSession('morning', 'start')" class="btn btn-success btn-sm w-100"><i class="bi bi-play-fill"></i> Mulai</button>
-                                @else
-                                    <button onclick="controlSession('morning', 'stop')" class="btn btn-danger btn-sm w-100"><i class="bi bi-stop-fill"></i> Tutup</button>
-                                @endif
+                    <h2 class="small fw-semibold text-muted mb-3"><i class="bi bi-clock-history me-1"></i>Status Sesi Absensi</h2>
+                    @if($schedule)
+                        <div class="row g-3">
+                            {{-- Pagi --}}
+                            <div class="col-6">
+                                <div class="rounded-3 border border-2 p-3 text-center {{ $morningActive ? 'border-success bg-success bg-opacity-10' : 'border-secondary-subtle bg-light' }}">
+                                    <span class="fs-2"><i class="bi bi-sunrise-fill"></i></span>
+                                    <p class="small fw-semibold mb-0 mt-0">Sesi Pagi</p>
+                                    <p class="mb-1 {{ $morningActive ? 'text-success fw-semibold' : 'text-muted' }}" style="font-size:0.7rem;">
+                                        {{ $morningActive ? '● AKTIF' : '○ NONAKTIF' }}
+                                    </p>
+                                    <p class="mb-0 text-muted" style="font-size:0.65rem;">
+                                        {{ \Carbon\Carbon::parse($schedule->morning_start)->format('H:i') }} - {{ \Carbon\Carbon::parse($schedule->morning_end)->format('H:i') }}
+                                    </p>
+                                </div>
+                            </div>
+                            {{-- Sore --}}
+                            <div class="col-6">
+                                <div class="rounded-3 border border-2 p-3 text-center {{ $afternoonActive ? 'border-primary bg-primary bg-opacity-10' : 'border-secondary-subtle bg-light' }}">
+                                    <span class="fs-2"><i class="bi bi-sunset-fill"></i></span>
+                                    <p class="small fw-semibold mb-0 mt-0">Sesi Sore</p>
+                                    <p class="mb-1 {{ $afternoonActive ? 'text-primary fw-semibold' : 'text-muted' }}" style="font-size:0.7rem;">
+                                        {{ $afternoonActive ? '● AKTIF' : '○ NONAKTIF' }}
+                                    </p>
+                                    <p class="mb-0 text-muted" style="font-size:0.65rem;">
+                                        {{ \Carbon\Carbon::parse($schedule->afternoon_start)->format('H:i') }} - {{ \Carbon\Carbon::parse($schedule->afternoon_end)->format('H:i') }}
+                                    </p>
+                                </div>
                             </div>
                         </div>
-                        {{-- Sore --}}
-                        <div class="col-6">
-                            <div class="rounded-3 border border-2 p-3 text-center {{ $afternoonActive ? 'border-primary bg-primary bg-opacity-10' : 'border-secondary-subtle bg-light' }}">
-                                <span class="fs-2"><i class="bi bi-sunset-fill"></i></span>
-                                <p class="small fw-semibold mb-0 mt-0">Sesi Sore</p>
-                                <p class="mb-2 {{ $afternoonActive ? 'text-primary fw-semibold' : 'text-muted' }}" style="font-size:0.7rem;">
-                                    {{ $afternoonActive ? '● AKTIF' : '○ NONAKTIF' }}
-                                </p>
-                                @if(!$afternoonActive)
-                                    <button onclick="controlSession('afternoon', 'start')" class="btn btn-success btn-sm w-100"><i class="bi bi-play-fill"></i> Mulai</button>
-                                @else
-                                    <button onclick="controlSession('afternoon', 'stop')" class="btn btn-danger btn-sm w-100"><i class="bi bi-stop-fill"></i> Tutup</button>
-                                @endif
-                            </div>
+                        <div class="bg-light rounded-3 p-2 text-center mt-3">
+                            <p class="mb-0 text-muted" style="font-size:0.7rem;">
+                                <i class="bi bi-info-circle me-1"></i>Sesi buka/tutup otomatis sesuai jadwal
+                            </p>
                         </div>
-                    </div>
+                    @else
+                        <div class="bg-warning bg-opacity-10 border border-warning rounded-3 p-3 text-center">
+                            <i class="bi bi-exclamation-triangle text-warning fs-3"></i>
+                            <p class="small fw-medium mt-2 mb-1">Jadwal belum diatur</p>
+                            <p class="mb-2" style="font-size:0.7rem;">Scanner Sekretaris tidak akan aktif sampai jadwal diatur.</p>
+                            <a href="{{ route('walikelas.schedule') }}" class="btn btn-warning btn-sm fw-semibold">
+                                <i class="bi bi-gear me-1"></i>Atur Jadwal
+                            </a>
+                        </div>
+                    @endif
                 </div>
             </div>
 
@@ -98,7 +110,10 @@
             <div class="card border-0 shadow-sm">
                 <div class="card-body d-flex flex-column gap-2">
                     <h2 class="h6 fw-semibold">Aksi Cepat</h2>
-                    <a href="{{ route('walikelas.rekap') }}" class="btn btn-primary d-flex align-items-center justify-content-center gap-2">
+                    <a href="{{ route('walikelas.schedule') }}" class="btn btn-primary d-flex align-items-center justify-content-center gap-2">
+                        <i class="bi bi-clock"></i> Atur Jadwal Presensi
+                    </a>
+                    <a href="{{ route('walikelas.rekap') }}" class="btn btn-outline-secondary d-flex align-items-center justify-content-center gap-2">
                         <i class="bi bi-table"></i> Lihat Rekap Bulanan
                     </a>
                     <a href="{{ route('walikelas.rekap.export') }}" class="btn btn-outline-secondary d-flex align-items-center justify-content-center gap-2">
@@ -109,37 +124,4 @@
         </div>
     </div>
 
-    <script>
-        async function controlSession(session, action) {
-            const url = action === 'start'
-                ? '{{ route("walikelas.session.start") }}'
-                : '{{ route("walikelas.session.stop") }}';
-
-            const label = session === 'morning' ? 'Pagi' : 'Sore';
-
-            if (action === 'stop') {
-                if (!confirm(`Tutup Sesi ${label}?\n\nSiswa yang belum absen akan otomatis di-mark ALFA (tidak hadir).`)) {
-                    return;
-                }
-            }
-
-            try {
-                const response = await fetch(url, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                        'Accept': 'application/json',
-                    },
-                    body: JSON.stringify({ session }),
-                });
-
-                const data = await response.json();
-                alert(data.message);
-                window.location.reload();
-            } catch (error) {
-                alert('Gagal: ' + error.message);
-            }
-        }
-    </script>
 </x-layouts.app>
