@@ -90,7 +90,7 @@
                     </div>
                 </div>
 
-                <button type="submit" class="btn btn-primary w-100 fw-semibold">✅ Simpan & Masuk Dashboard</button>
+                <button type="submit" class="btn btn-primary w-100 fw-semibold"> Simpan & Masuk Dashboard</button>
             </form>
         </div>
     </div>

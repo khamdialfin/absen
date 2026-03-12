@@ -1,4 +1,4 @@
-<?php
+    <?php
 
 return [
 
@@ -40,7 +40,6 @@ return [
         'client_secret' => env('GOOGLE_CLIENT_SECRET'),
         'redirect' => env('GOOGLE_REDIRECT_URI'),
     ],
-
     'fonnte' => [
         'token'   => env('FONNTE_TOKEN', ''),
         'enabled' => env('FONNTE_ENABLED', false),
