@@ -102,11 +102,13 @@ Route::middleware(['auth', 'password.set'])->group(function () {
             Route::get('/rekap/export', [RekapController::class, 'export'])
                 ->name('rekap.export');
 
-            // Session Control (hanya walikelas yang bisa buka/tutup sesi)
-            Route::post('/session/start', [AttendanceController::class, 'startSession'])
-                ->name('session.start');
-            Route::post('/session/stop', [AttendanceController::class, 'stopSession'])
-                ->name('session.stop');
+            // Pengaturan Jadwal Presensi
+            Route::get('/schedule', [AttendanceController::class, 'scheduleForm'])
+                ->name('schedule');
+            Route::post('/schedule', [AttendanceController::class, 'saveSchedule'])
+                ->name('schedule.save');
+            Route::post('/session/close-morning', [AttendanceController::class, 'closeSessionMorning'])
+                ->name('session.close-morning');
 
             // Manage Users (Admin)
             Route::get('/users', [\App\Http\Controllers\ManageUsersController::class, 'index'])

@@ -11,10 +11,10 @@
                 <div class="card-body">
                     <div class="d-flex align-items-center gap-2 mb-1">
                         <span class="rounded-circle d-inline-block {{ $isMorningSession ? 'bg-warning' : 'bg-secondary' }}" style="width:10px;height:10px;"></span>
-                        <span class="small fw-semibold {{ $isMorningSession ? 'text-warning' : 'text-muted' }}">Sesi Pagi (06:00 - 08:00)</span>
+                        <span class="small fw-semibold {{ $isMorningSession ? 'text-warning' : 'text-muted' }}">Sesi Pagi ({{ $schedule ? \Carbon\Carbon::parse($schedule->morning_start)->format('H:i') . ' - ' . \Carbon\Carbon::parse($schedule->morning_end)->format('H:i') : 'Belum diatur' }})</span>
                     </div>
-                    <p class="mb-0" style="font-size:0.75rem;" class="{{ $isMorningSession ? 'text-warning' : 'text-muted' }}">
-                        {{ $isMorningSession ? ' Sesi aktif — silakan scan QR' : '⏸ Sesi tidak aktif' }}
+                    <p class="mb-0" style="font-size:0.75rem;">
+                        {{ $isMorningSession ? '▶ Sesi aktif — silakan scan QR' : '⏸ Sesi tidak aktif' }}
                     </p>
                 </div>
             </div>
@@ -24,10 +24,10 @@
                 <div class="card-body">
                     <div class="d-flex align-items-center gap-2 mb-1">
                         <span class="rounded-circle d-inline-block {{ $isAfternoonSession ? 'bg-primary' : 'bg-secondary' }}" style="width:10px;height:10px;"></span>
-                        <span class="small fw-semibold {{ $isAfternoonSession ? 'text-primary' : 'text-muted' }}">Sesi Sore (15:00 - 16:00)</span>
+                        <span class="small fw-semibold {{ $isAfternoonSession ? 'text-primary' : 'text-muted' }}">Sesi Sore ({{ $schedule ? \Carbon\Carbon::parse($schedule->afternoon_start)->format('H:i') . ' - ' . \Carbon\Carbon::parse($schedule->afternoon_end)->format('H:i') : 'Belum diatur' }})</span>
                     </div>
                     <p class="mb-0" style="font-size:0.75rem;">
-                        {{ $isAfternoonSession ? 'Sesi aktif — silakan scan QR' : 'Sesi tidak aktif' }}
+                        {{ $isAfternoonSession ? '▶ Sesi aktif — silakan scan QR' : '⏸ Sesi tidak aktif' }}
                     </p>
                 </div>
             </div>

@@ -42,13 +42,13 @@
 
                     {{-- Keterangan --}}
                     <div class="mb-3">
-                        <label for="notes" class="form-label small fw-medium">Keterangan (Opsional)</label>
+                        <label for="notes" class="form-label small fw-medium">Keterangan </label>
                         <textarea name="notes" id="notes" rows="3" class="form-control" placeholder="Contoh: Demam tinggi, acara keluarga, dll">{{ old('notes') }}</textarea>
                     </div>
 
                     {{-- Upload Surat --}}
                     <div class="mb-3">
-                        <label for="letter" class="form-label small fw-medium">Upload Surat (Opsional)</label>
+                        <label for="letter" class="form-label small fw-medium">Upload Surat </label>
                         <input type="file" name="letter" id="letter" accept=".jpg,.jpeg,.png,.pdf" class="form-control">
                         <div class="form-text">Format: JPG, PNG, PDF. Maks 2MB.</div>
                         @error('letter') <div class="text-danger small mt-1">{{ $message }}</div> @enderror

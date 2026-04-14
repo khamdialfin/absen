@@ -46,7 +46,7 @@
                  style="width:32px;height:32px;">
                 3
             </div>
-            <span class="text-white small fw-medium">Profil Parent</span>
+            <span class="text-white small fw-medium">Profil Orang Tua</span>
         </div>
     </div>
 
@@ -124,7 +124,7 @@
 
                 <button type="submit"
                         class="btn btn-primary w-100 fw-semibold">
-                    💾 Simpan & Selesai
+                     Simpan & Selesai
                 </button>
             </form>
         </div>

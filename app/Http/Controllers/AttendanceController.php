@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Attendance;
+use App\Models\AttendanceSchedule;
 use App\Models\User;
+use App\Services\FonnteService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
@@ -112,9 +114,10 @@ class AttendanceController extends Controller
         $authUser = auth()->user();
         $kelas = $authUser->kelas;
 
-        // Cek status sesi dari cache
-        $morningActive   = Cache::get('session:morning:' . $today, false);
-        $afternoonActive = Cache::get('session:afternoon:' . $today, false);
+        // Cek status sesi dari jadwal di database
+        $schedule = AttendanceSchedule::where('kelas', $kelas)->first();
+        $morningActive   = $schedule ? $schedule->isMorningActive() : false;
+        $afternoonActive = $schedule ? $schedule->isAfternoonActive() : false;
 
         // Data siswa yang sudah scan hari ini (hanya kelas sendiri)
         $todayAttendances = Attendance::with('user')
@@ -130,81 +133,88 @@ class AttendanceController extends Controller
             'morningActive',
             'afternoonActive',
             'todayAttendances',
-            'totalSiswa'
+            'totalSiswa',
+            'schedule'
         ));
     }
 
     /**
-     * Mulai sesi absensi.
+     * Form pengaturan jadwal presensi (Wali Kelas).
      */
-    public function startSession(Request $request)
+    public function scheduleForm()
     {
-        $request->validate([
-            'session' => 'required|in:morning,afternoon',
-        ]);
+        /** @var \App\Models\User $authUser */
+        $authUser = auth()->user();
+        $kelas = $authUser->kelas;
 
-        $today = now()->toDateString();
-        $sessionKey = 'session:' . $request->session . ':' . $today;
+        $schedule = AttendanceSchedule::where('kelas', $kelas)->first();
 
-        Cache::put($sessionKey, true, now()->endOfDay());
-
-        $label = $request->session === 'morning' ? 'Pagi' : 'Sore';
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Sesi ' . $label . ' dibuka! Siswa bisa mulai scan QR.',
-        ]);
+        return view('walikelas.schedule', compact('schedule', 'kelas'));
     }
 
     /**
-     * Tutup sesi absensi.
-     * Siswa yang belum scan otomatis di-mark alpha.
+     * Simpan jadwal presensi (Wali Kelas).
      */
-    public function stopSession(Request $request)
+    public function saveSchedule(Request $request)
     {
         $request->validate([
-            'session' => 'required|in:morning,afternoon',
+            'morning_start'    => 'required|date_format:H:i',
+            'morning_end'      => 'required|date_format:H:i|after:morning_start',
+            'afternoon_start'  => 'required|date_format:H:i',
+            'afternoon_end'    => 'required|date_format:H:i|after:afternoon_start',
+            'late_threshold'   => 'required|date_format:H:i',
+        ], [
+            'morning_end.after'    => 'Jam selesai pagi harus setelah jam mulai pagi.',
+            'afternoon_end.after'  => 'Jam selesai sore harus setelah jam mulai sore.',
         ]);
 
+        /** @var \App\Models\User $authUser */
+        $authUser = auth()->user();
+
+        AttendanceSchedule::updateOrCreate(
+            ['kelas' => $authUser->kelas],
+            [
+                'morning_start'   => $request->morning_start,
+                'morning_end'     => $request->morning_end,
+                'afternoon_start' => $request->afternoon_start,
+                'afternoon_end'   => $request->afternoon_end,
+                'late_threshold'  => $request->late_threshold,
+            ]
+        );
+
+        return back()->with('success', 'Jadwal presensi berhasil disimpan!');
+    }
+
+    /**
+     * Tutup sesi pagi secara manual & mark alpha siswa yang belum absen.
+     */
+    public function closeSessionMorning()
+    {
+        /** @var \App\Models\User $authUser */
+        $authUser = auth()->user();
+        $kelas = $authUser->kelas;
         $today = now()->toDateString();
-        $sessionKey = 'session:' . $request->session . ':' . $today;
 
-        // Tutup sesi
-        Cache::forget($sessionKey);
+        $absentStudents = User::where('role', 'siswa')
+            ->where('kelas', $kelas)
+            ->whereDoesntHave('attendances', function ($q) use ($today) {
+                $q->whereDate('date', $today);
+            })
+            ->get();
 
-        if ($request->session === 'morning') {
-            // Ambil siswa kelas ini yang BELUM absen hari ini
-            /** @var \App\Models\User $authUser */
-            $authUser = auth()->user();
-            $kelas = $authUser->kelas;
-            $absentStudents = User::where('role', 'siswa')
-                ->where('kelas', $kelas)
-                ->whereDoesntHave('attendances', function ($q) use ($today) {
-                    $q->whereDate('date', $today);
-                })
-                ->get();
-
-            // Buat record alpha untuk siswa yang belum absen
-            foreach ($absentStudents as $student) {
-                Attendance::create([
-                    'user_id' => $student->id,
-                    'date'    => $today,
-                    'time_in' => null,
-                    'status'  => 'alfa',
-                ]);
-            }
-
-            $label = 'Pagi';
-            $message = 'Sesi Pagi ditutup. ' . $absentStudents->count() . ' siswa tidak hadir (alpha).';
-        } else {
-            $label = 'Sore';
-            $message = 'Sesi Sore ditutup.';
+        foreach ($absentStudents as $student) {
+            Attendance::create([
+                'user_id' => $student->id,
+                'date'    => $today,
+                'time_in' => null,
+                'status'  => 'alfa',
+            ]);
         }
 
         return response()->json([
             'success' => true,
-            'message' => $message,
-            'absent_count' => $request->session === 'morning' ? ($absentStudents->count() ?? 0) : 0,
+            'message' => 'Siswa yang belum absen telah di-mark ALFA. (' . $absentStudents->count() . ' siswa)',
+            'absent_count' => $absentStudents->count(),
         ]);
     }
 
@@ -282,7 +292,9 @@ class AttendanceController extends Controller
                 ], 422);
             }
 
-            $lateThreshold = config('school.session.late_threshold', '08:00:00');
+            // Ambil late threshold dari schedule, fallback ke config
+            $scheduleRecord = AttendanceSchedule::where('kelas', $sekretaris->kelas)->first();
+            $lateThreshold = $scheduleRecord ? $scheduleRecord->late_threshold : config('school.session.late_threshold', '08:00:00');
 
             $attendance = Attendance::create([
                 'user_id' => $user->id,
@@ -292,6 +304,9 @@ class AttendanceController extends Controller
             ]);
 
             Cache::forget('qr_token:' . $token);
+
+            // Kirim notifikasi WA ke orang tua
+            $this->sendParentNotification($user, 'checkin', $currentTime, $attendance->status);
 
             return response()->json([
                 'success' => true,
@@ -326,6 +341,9 @@ class AttendanceController extends Controller
 
             Cache::forget('qr_token:' . $token);
 
+            // Kirim notifikasi WA ke orang tua
+            $this->sendParentNotification($user, 'checkout', $currentTime, null, $attendance->time_in);
+
             return response()->json([
                 'success' => true,
                 'message' => 'Check-out berhasil: ' . $user->name,
@@ -334,6 +352,51 @@ class AttendanceController extends Controller
                     'time_out' => $currentTime,
                 ],
             ]);
+        }
+    }
+
+    /**
+     * Kirim notifikasi WhatsApp ke orang tua siswa via Fonnte.
+     */
+    private function sendParentNotification(User $student, string $type, string $time, ?string $status = null, ?string $timeIn = null): void
+    {
+        \Illuminate\Support\Facades\Log::info("WA Notif: called for {$student->name} (ID:{$student->id}), type={$type}");
+
+        if (!config('services.fonnte.enabled')) {
+            \Illuminate\Support\Facades\Log::info("WA Notif: SKIPPED - fonnte not enabled");
+            return;
+        }
+
+        try {
+            $parentProfile = $student->parentProfile;
+            if (!$parentProfile || empty($parentProfile->phone)) {
+                \Illuminate\Support\Facades\Log::info("WA Notif: SKIPPED - no parent profile/phone for {$student->name}");
+                return;
+            }
+
+            \Illuminate\Support\Facades\Log::info("WA Notif: sending to {$parentProfile->phone} for {$student->name}");
+
+            $fonnte = new FonnteService();
+
+            if ($type === 'checkin') {
+                $result = $fonnte->sendCheckInNotification(
+                    $parentProfile->phone,
+                    $student->name,
+                    $time,
+                    $status ?? 'hadir'
+                );
+            } else {
+                $result = $fonnte->sendCheckOutNotification(
+                    $parentProfile->phone,
+                    $student->name,
+                    $timeIn ?? '-',
+                    $time
+                );
+            }
+
+            \Illuminate\Support\Facades\Log::info("WA Notif: result=" . ($result ? 'SUCCESS' : 'FAILED'));
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('WA Notification error: ' . $e->getMessage());
         }
     }
 
